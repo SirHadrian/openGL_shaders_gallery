@@ -1,18 +1,18 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -Wconversion -Wuninitialized -O2
-LIBS=-lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -lm -ldl
+LD=gcc
+CFLAGS=-Wall -Wextra -Wconversion -Wuninitialized
+LDFLAGS=-lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -lm -ldl
+OBJS=main.o glad.o stb_image.o
+TARGET=window.out
 
-default: main.o glad.o stb_image.o
-	${CC} main.o glad.o stb_image.o -o window.out ${LIBS} && ./window.out
+all: ${TARGET}
+	./${TARGET}
 
-stb_image.o: stb_image.c
-	${CC} ${COMPILER_FLAGS} -c stb_image.c
+${TARGET}: ${OBJS}
+	${LD} ${OBJS} ${LDFLAGS} -o ${TARGET}
 
-main.o: main.c
-	${CC} ${COMPILER_FLAGS} -c main.c
-
-glad.o: glad.c
-	${CC} ${COMPILER_FLAGS} -c glad.c
+%.o: %.c
+	${CC} ${CFLAGS} -c $<
 
 clean:
 	rm *.o window.out

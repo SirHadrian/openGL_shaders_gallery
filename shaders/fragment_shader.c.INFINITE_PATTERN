@@ -1,0 +1,52 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+float hash(vec2 seed)
+{
+  // Make the dot product of the seed with this random vec2.
+  // Return values between 0 - 1.
+  vec2 r1 = vec2(9312.3, 2535.52);
+  // Increase the freqency of the sine wave by this random value.
+  float r2 = 5445.12;
+  // Get only the values between 0 - 1 from the pseudo random generated number.
+  return fract(sin(dot(seed, r1)) * r2);
+}
+
+void main()
+{
+  vec2 uv = (FC.xy - .5 * R.xy) / R.y;
+
+  vec3 color = vec3(0);
+
+  uv *= 9.;
+  uv -= T;
+
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv);
+
+  gv -= .5;
+
+  float r = hash(id);
+
+  if (r < .5)
+    gv.x *= -1;
+
+  float mask = abs(abs(gv.x + gv.y) - .5);
+  mask = length(gv - sign(gv.x + gv.y + .001) * .5) - .5;
+
+  color += S(.01, -.01, abs(mask) - .1);
+
+  FragColor = vec4(color, 1.);
+}

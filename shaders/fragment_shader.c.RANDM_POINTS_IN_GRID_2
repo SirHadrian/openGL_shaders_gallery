@@ -1,0 +1,83 @@
+#version 460 core
+
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define S(a, b, t) smoothstep(a, b, t)
+
+float draw_line(vec2 p, vec2 a, vec2 b) {
+
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+
+  float t = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.);
+
+  return length(pa - ba * t);
+}
+
+float noise_f(vec2 p) {
+
+  p = fract(p * vec2(233.34, 851.73));
+  p += dot(p, p + 23.45);
+  return fract(p.x * p.y);
+}
+
+vec2 noise_vec2(vec2 p) {
+
+  float n = noise_f(p);
+
+  return vec2(n, noise_f(p + n));
+}
+
+vec3 draw_grid(vec2 gv) {
+
+  if (gv.x > .49 || gv.y > .49) {
+    return vec3(1., 0., 0.);
+  }
+
+  return vec3(0., 0., 0.);
+}
+
+vec2 get_pos(vec2 id) {
+
+  vec2 noise = noise_vec2(id);
+
+  float x = sin(T * noise.x);
+  float y = cos(T * noise.y);
+
+  return vec2(x, y) * .4;
+}
+
+vec3 draw_points(vec2 gv, vec2 id) {
+
+  vec2 pos = get_pos(id);
+
+  float p = length(gv - pos);
+  float d = S(.1, .05, p);
+
+  return vec3(d);
+}
+
+void main() {
+
+  vec2 uv = FC.xy / R.xy;
+
+  uv -= .5;
+  uv.x *= R.x / R.y;
+
+  uv *= 5.;
+  vec2 gv = fract(uv) - .5;
+  vec2 id = floor(uv);
+
+  vec3 color = draw_points(gv, id) + draw_grid(gv);
+
+  FragColor = vec4(color, 1.);
+}

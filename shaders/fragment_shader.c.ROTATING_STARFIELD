@@ -1,0 +1,104 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+#define LAYERS 8.
+
+mat2 rotate(float a) {
+  float s = sin(a), c = cos(a);
+  return mat2(c, -s, s, c);
+}
+
+float star(vec2 uv, float flare) {
+  float d = length(uv);
+  float m = .05 / d;
+
+  float rays = max(0., 1. - abs(uv.x) * abs(uv.y) * 1000.);
+  m += rays * flare;
+
+  uv *= rotate(PI / 4.);
+
+  float rays45 = max(0., 1. - abs(uv.x) * abs(uv.y) * 1000.);
+  rays45 *= .1;
+  m += rays45 * flare;
+
+  m *= S(1., .2, d);
+  return m;
+}
+
+float sudo_rand(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+
+  return fract(p.x * p.y);
+}
+
+vec3 starLayer(vec2 uv) {
+
+  vec3 color = vec3(0);
+
+  vec2 gv = fract(uv) - .5;
+  vec2 id = floor(uv);
+
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+
+      vec2 offset = vec2(x, y);
+
+      float n = sudo_rand(id + offset);
+
+      float size = fract(n * 352.32);
+
+      float star = star(gv - offset - vec2(n, fract(n * 34.)) + .5,
+                        S(.9, 1., size) * .2);
+
+      vec3 star_col =
+          sin(vec3(.8, .2, .5) * fract(n * 123414.2) * 2134.4) * .5 + 0.5;
+
+      star_col *= vec3(1, 0.5, 1. + size);
+
+      star *= sin(T * .1 + n * 2.65) * .5 + 1.;
+
+      color += star * size * star_col;
+    }
+  }
+  return color;
+}
+void main() {
+
+  vec2 uv = (FC.xy - .5 * R.xy) / R.y;
+
+  uv *= rotate(T * .2);
+
+  vec3 color = vec3(0);
+
+  for (float i = 0.; i < 1.; i += 1. / LAYERS) {
+
+    float depth = fract(i + T * .1);
+    float fade = depth * S(1., .9, depth);
+    float scale = mix(20., .5, depth);
+
+    color += starLayer(uv * scale + i * 2123.) * fade;
+  }
+
+  // if (gv.x > .49 || gv.y > .49)
+  //   color.r = 1.;
+  // color.rg = gv;
+
+  // color.rg += id * .3;
+
+  // color += sudo_rand(id);
+
+  FragColor = vec4(color, 1.);
+}

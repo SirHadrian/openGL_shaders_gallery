@@ -1,0 +1,78 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+float hash(vec2 seed)
+{
+  // Make the dot product of the seed with this random vec2.
+  // Return values between 0 - 1.
+  vec2 r1 = vec2(94312.3, 2535.52);
+  // Increase the freqency of the sine wave by this random value.
+  float r2 = 5445.12;
+  // Get only the values between 0 - 1 from the pseudo random generated number.
+  return fract(sin(dot(seed, r1)) * r2);
+}
+
+float noise(vec2 uv)
+{
+  vec2 id, lv;
+  id = floor(uv); // Each subspace set of coordinates.
+  lv = fract(uv); // Each subspace set of uv's.
+  // Custom cubic curve to smooth the noise.
+  // Smoothstep can be used as well.
+  lv *= lv * (3. - 2. * lv);
+  // Get the random hash for bottom left and right corners of the subspace.
+  float bl = hash(id + vec2(0, 0));
+  float br = hash(id + vec2(1, 0));
+  // Interpolate between bottom corners to get a smooth transition on the x
+  // axis.
+  float b = mix(bl, br, lv.x);
+  // Get the random hash of the top corners of the subspace.
+  float tl = hash(id + vec2(0, 1));
+  float tr = hash(id + vec2(1, 1));
+  // Interpolate between the top corners to get a smooth transition on the x
+  // axis.
+  float t = mix(tl, tr, lv.x);
+  // Interpolate the resulting values on the y axis.
+  return mix(b, t, lv.y);
+}
+
+void main()
+{
+  vec2 uv = FC.xy / R.xy;
+  vec3 color = vec3(0);
+  // The number of Perlin noise layers.
+  float octaves = 10.;
+  // The impact each new layer has on the overall result
+  // All impact on first layer, less and less with every new layer added.
+  float amplitude = 1.;
+  // Increased random looking results at higher freqency witch translates into
+  // more small details.
+  float freqency = 1.;
+  // Number of sub-spaces.
+  uv *= 5.;
+
+  for (float i = 0.; i < octaves; i += 1.) {
+    // Noise
+    color += vec3(noise(uv * freqency) * amplitude);
+    // Halven the impact each layer has on the result.
+    amplitude *= .5;
+    // Increase the detail each layer adds to the result.
+    freqency *= 2.;
+  }
+  // Increase or decrease the value to get lower or higher noise ranges.
+  color *= .7;
+
+  FragColor = vec4(color, 1.);
+}

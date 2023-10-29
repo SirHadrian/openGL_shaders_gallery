@@ -1,0 +1,73 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+in vec3 color;
+in vec2 texCoord;
+
+uniform sampler2D tex0;
+// Load texture
+// vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+#define CELL_SIZE 1.
+// If the uv space is too big the grid will disappear.
+// Increase the line size to make them appear.
+#define LINE_SIZE 0.011
+
+float 
+hash(vec2 seed) 
+{
+  vec2 m1 = vec2(324345., 435424.);
+  float m2 = 345232.;
+
+  return fract(sin(dot(seed, m1)) * m2);
+}
+
+void 
+main() 
+{
+  vec2 uv = FC.xy / R.xy;
+  uv.x *= R.x / R.y;
+
+  uv *= 5.;
+
+  vec3 color = vec3(0.);
+
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv) - .5;
+
+  float field = 1.;
+
+  for (float y = -1.; y <= 1.; y += 1.) 
+  {
+    for (float x = -1.; x <= 1.; x += 1.) 
+    {
+      vec2 neighbor = vec2(x, y);
+
+      float r = hash(id + neighbor);
+
+      vec2 point = vec2(r, fract(r * 32432.));
+
+      vec2 offset = neighbor + point;
+
+      float dist = length(gv - offset);
+
+      field = min(dist, field);
+    }
+  }
+
+  color += vec3(field);
+
+  FragColor = vec4(color, 1.);
+}

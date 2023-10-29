@@ -1,0 +1,155 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define MAX_MARCHING_STEPS 255
+#define PRECISION 0.001
+#define MAX_DIST 50.
+
+struct Shape {
+  float sdf;
+  vec3 color;
+};
+
+Shape rayMarch(vec3 ro, vec3 rd);
+vec3 render(vec3 ro, vec3 rd);
+vec3 calc_normal(vec3 p);
+Shape sphereSDF(vec3 p, vec3 offset, vec3 color, mat3 transform);
+Shape scene(vec3 point);
+Shape cubeSDF(vec3 p, vec3 offset, vec3 color, float radius, mat3 transform);
+
+// Rotation matrix around the X axis.
+mat3 rotateX(float theta) {
+  float c = cos(theta);
+  float s = sin(theta);
+  return mat3(vec3(1, 0, 0), vec3(0, c, -s), vec3(0, s, c));
+}
+
+// Rotation matrix around the Y axis.
+mat3 rotateY(float theta) {
+  float c = cos(theta);
+  float s = sin(theta);
+  return mat3(vec3(c, 0, s), vec3(0, 1, 0), vec3(-s, 0, c));
+}
+
+// Rotation matrix around the Z axis.
+mat3 rotateZ(float theta) {
+  float c = cos(theta);
+  float s = sin(theta);
+  return mat3(vec3(c, -s, 0), vec3(s, c, 0), vec3(0, 0, 1));
+}
+
+// Identity matrix.
+mat3 identity() { return mat3(vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1)); }
+
+vec3 calc_normal(vec3 p) {
+
+  vec2 e = vec2(1.0, -1.0) * 0.005;
+  return normalize(e.xyy * scene(p + e.xyy).sdf + e.yyx * scene(p + e.yyx).sdf +
+                   e.yxy * scene(p + e.yxy).sdf + e.xxx * scene(p + e.xxx).sdf
+
+  );
+}
+
+Shape sphereSDF(vec3 p, vec3 offset, vec3 color, float radius, mat3 transform) {
+  p -= offset;
+  p *= transform;
+
+  float d = length(p) - radius;
+
+  return Shape(d, color);
+}
+
+Shape cubeSDF(vec3 p, vec3 offset, vec3 color, float radius, mat3 transform) {
+  p -= offset;
+  p *= transform;
+  p -= vec3(0.5, 0, 0);
+
+  vec3 q = abs(p) - radius;
+  float d = length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+
+  return Shape(d, color);
+}
+
+Shape floorSDF(vec3 p, vec3 color, float y) {
+  float d = p.y + y;
+  return Shape(d, color);
+}
+
+Shape minShape(Shape a, Shape b) { return a.sdf < b.sdf ? a : b; }
+
+Shape scene(vec3 point) {
+
+  Shape dist_field =
+      sphereSDF(point, vec3(-0.5, 0, 1), vec3(1, 0, 0), 0.1, rotateY(T));
+  dist_field = minShape(dist_field, cubeSDF(point, vec3(0.3, 0, 1),
+                                            vec3(0, 1, 0), 0.2, rotateY(T)));
+
+  vec3 floor_color = vec3(1. + 0.7 * mod(floor(point.x) + floor(point.z), 2.0));
+  dist_field = minShape(dist_field, floorSDF(point, floor_color, 0.9));
+
+  return dist_field;
+}
+
+vec3 render(vec3 ro, vec3 rd) {
+  vec3 color = vec3(1);
+
+  Shape closest_object = rayMarch(ro, rd);
+
+  if (closest_object.sdf > MAX_DIST)
+    return color;
+
+  vec3 p = ro + rd * closest_object.sdf;
+  vec3 normal = calc_normal(p);
+
+  vec3 light = vec3(0, 3, 3);
+
+  float dif = clamp(dot(normal, normalize(light - p)), 0., 1.);
+  color = vec3(dif);
+
+  return color * closest_object.color;
+}
+
+Shape rayMarch(vec3 ro, vec3 rd) {
+
+  float depth = 0.;
+  vec3 point;
+  Shape co;
+
+  int i = 0;
+  while (i < MAX_MARCHING_STEPS) {
+
+    point = ro + rd * depth;
+    co = scene(point);
+    depth += co.sdf;
+
+    if (co.sdf < PRECISION)
+      break;
+
+    i++;
+  }
+
+  co.sdf = depth;
+  return co;
+}
+
+void main() {
+
+  vec2 uv = (FC.xy - .5 * R.xy) / R.y;
+
+  vec3 ro = vec3(0, 0, 4);
+  vec3 rd = normalize(vec3(uv, -1));
+  rd *= rotateX(sin(T) * 0.5) * rotateY(cos(T) * 0.5);
+
+  vec3 color = render(ro, rd);
+
+  FragColor = vec4(color, 1.);
+}

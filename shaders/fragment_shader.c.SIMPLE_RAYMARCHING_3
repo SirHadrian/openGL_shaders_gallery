@@ -1,0 +1,126 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define MAX_MARCHING_STEPS 255
+#define PRECISION 0.01
+#define MAX_DIST 50.
+
+// Sphere signed distance function
+float sphere_sdf(vec3 p, vec3 offset) { return length(p - offset) - 0.1; }
+
+// Floor sdf
+float floor_sdf(vec3 p) { return p.y + 1.; }
+
+float draw_scene(vec3 p) {
+
+  // Adding multiple objects to a scene
+  float d = sphere_sdf(p, vec3(0.2, 0, 0.4));
+  d = min(d, sphere_sdf(p, vec3(-0.2, 0, -0.4)));
+  d = min(d, sphere_sdf(p, vec3(-0.4, 0, 0)));
+  d = min(d, floor_sdf(p));
+
+  return d;
+}
+
+vec3 calc_normal(vec3 p) {
+
+  vec2 e = vec2(1.0, -1.0) * 0.005;
+  return normalize(e.xyy * draw_scene(p + e.xyy) +
+                   e.yyx * draw_scene(p + e.yyx) +
+                   e.yxy * draw_scene(p + e.yxy) + e.xxx * draw_scene(p + e.xxx)
+
+  );
+}
+
+float ray_march(vec3 ro, vec3 rd) {
+
+  // Depth(distance) already traveled by the ray
+  float depth;
+  // The new location for the origin of the ray at the calculated depth
+  vec3 point;
+  // Get scene distance field
+  float distance_field;
+
+  int i = 0;
+  while (i < MAX_MARCHING_STEPS) {
+
+    // Calculate new origin location based on marched depth
+    // Multiply depth with normalized vector rd to get get direction to the
+    // depth
+    point = ro + depth * rd;
+
+    // Get the distance field for the current depth
+    // return the nearest intersection with a scene object
+    distance_field = draw_scene(point);
+
+    // Add the minimum intersection with the scene to the dept to calculate the
+    // next point location next iteration
+    depth += distance_field;
+
+    // Check how close has the ray marched to the shape distance field
+    // If the distance to the shape is smaller than the given precision then
+    // stop the loop
+    if (distance_field < PRECISION)
+      break;
+    i++;
+  }
+  // Return how far has the ray traveled
+  return depth;
+}
+
+void main() {
+
+  vec2 uv =
+      gl_FragCoord.xy / u_resolution.xy; // Normalize screen pixel coord 0 - 1
+  uv -= .5;                              // Move center of canvas to -0.5 - 0.5
+  uv.x *= u_resolution.x / u_resolution.y; // Fix aspect ratio
+
+  // Equvalent with above 3 lines
+  // vec2 uv=(gl_FragCoord.xy-.5*u_resolution.xy)/u_resolution.y;
+
+  // Ray origin, 1 units behind the canvas where the camera is
+  // This is the camera position
+  vec3 ro = vec3(0, 0, 1);
+
+  // Compute the ray direction for every pixel on screen (uv)
+  // -1 so each ray is fired toward the canvas from the ray origin
+  vec3 rd = normalize(vec3(uv, -1));
+
+  // Returns the distance from the ray marching algorithm
+  float d = ray_march(ro, rd);
+
+  vec3 color = vec3(0.6);
+
+  if (d < MAX_DIST) {
+
+    // Final calculated point
+    vec3 p = ro + d * rd;
+    // Final point normal
+    vec3 normal = calc_normal(p);
+    // Light location
+    vec3 light = vec3(-2, 1, 0);
+
+    // Calculate diffuse lighting by taking the dot product of
+    // the light direction (light-p) and the normal.
+    float dif = clamp(
+        // Calculate the amount the light is hiting the surface of the objects
+        dot(normal,
+            normalize(light - p) // Get the direction of the light from source
+                                 // to the final point
+            // limit the values to 0 - 1 range
+            ),
+        0., 1.);
+
+    // Multiply by light intensity (5) and divide by the square
+    // of the distance to the light.
+    // dif *= 5. / dot(light - p, light_location - p);
+
+    color = vec3(dif);
+  }
+
+  FragColor = vec4(color, 1.);
+}

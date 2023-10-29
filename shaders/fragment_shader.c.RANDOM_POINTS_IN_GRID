@@ -1,0 +1,61 @@
+#version 460 core
+
+layout(location = 0) out vec4 FragColor;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+
+float dist_line(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+  float t = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.);
+  return length(pa - ba * t);
+}
+
+float random_f(vec2 p) {
+  p = fract(p * vec2(233.34, 251.73));
+  p += dot(p, p + 23.45);
+  return fract(p.x * p.y);
+}
+
+vec2 random_vec2(vec2 p) {
+  float n = random_f(p);
+  return vec2(n, random_f(p + n));
+}
+
+vec2 get_random_position(vec2 id) {
+  vec2 noise = random_vec2(id) * T;
+
+  return sin(noise) * .4;
+}
+
+void main() {
+
+  vec2 uv = FC.xy / R.xy;
+
+  uv -= .5;
+  uv.x *= R.x / R.y;
+
+  // float d = dist_line(uv, vec2(0), vec2(1));
+
+  uv *= 5.;
+
+  vec2 gv = fract(uv) - .5;
+  vec2 id = floor(uv);
+
+  vec2 random_point = get_random_position(id);
+
+  float d = length(gv - random_point);
+  float m = smoothstep(.1, .05, d);
+
+  vec3 color = vec3(m);
+
+  if (gv.x > .49 || gv.y > .49)
+    color = vec3(1., 0., 0.);
+
+  FragColor = vec4(color, 1.);
+}

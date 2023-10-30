@@ -1,0 +1,53 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+in vec3 color;
+in vec2 texCoord;
+
+uniform sampler2D tex0;
+// Load texture
+// vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+void 
+main() 
+{
+  vec2 uv = FC.xy / R.xy;
+  uv -= .5;
+  uv.x *= R.x/R.y;
+
+  vec3 col = vec3(0.);
+
+  vec3 r_color = vec3(.9, 0, .3);
+  vec3 g_color = vec3(0, .9, .3);
+  vec3 b_color = vec3(0, .3, .9);
+  vec3 y_color = vec3(.9, .9, .3);
+
+  vec2 p = (FC.xy * 2.0 - R.xy);
+  p /= min(R.x, R.y);
+
+  float a = sin(p.y * 5. - T * .1) / 2.;
+  float b = cos(p.y * 5. - T * .2) / 2.;
+  float c = sin(p.y * 5. - T * .3 + PI) / 2.;
+  float d = cos(p.y * 5. - T * .5 + PI) / 2.;
+
+  float e = .051 / abs(p.x + a);
+  float f = .051 / abs(p.x + b);
+  float g = .051 / abs(p.x + c);
+  float h = .051 / abs(p.x + d);
+
+  col = r_color * e + g_color * f + b_color * g + y_color * h;
+
+  FragColor = vec4(col, 1.);
+}

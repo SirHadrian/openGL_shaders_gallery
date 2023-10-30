@@ -29,25 +29,7 @@ main()
 
   vec3 col = vec3(0.);
 
-  vec3 r_color = vec3(.9, 0, .3);
-  vec3 g_color = vec3(0, .9, .3);
-  vec3 b_color = vec3(0, .3, .9);
-  vec3 y_color = vec3(.9, .9, .3);
-
-  vec2 p = (FC.xy * 2.0 - R.xy);
-  p /= min(R.x, R.y);
-
-  float a = sin(p.y * 5. - T * .1) / 2.;
-  float b = cos(p.y * 5. - T * .2) / 2.;
-  float c = sin(p.y * 5. - T * .3 + PI) / 2.;
-  float d = cos(p.y * 5. - T * .5 + PI) / 2.;
-
-  float e = .051 / abs(p.x + a);
-  float f = .051 / abs(p.x + b);
-  float g = .051 / abs(p.x + c);
-  float h = .051 / abs(p.x + d);
-
-  col = r_color * e + g_color * f + b_color * g + y_color * h;
+  col.rg = uv;
 
   FragColor = vec4(col, 1.);
 }

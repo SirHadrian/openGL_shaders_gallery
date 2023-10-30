@@ -45,11 +45,11 @@ do { \
   do {} while(0)
 #endif
 
-// #define WIDTH 1920.0f
-// #define HEIGHT 1080.0f
+#define WIDTH 1920.0f
+#define HEIGHT 1080.0f
 
-#define WIDTH 800.0f
-#define HEIGHT 600.0f
+// #define WIDTH 800.0f
+// #define HEIGHT 600.0f
 
 #define TITLE "OpenGL Template"
 

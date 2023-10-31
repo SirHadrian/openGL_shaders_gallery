@@ -29,7 +29,7 @@ main()
 
   vec3 color = vec3(0.);
 
-  col.rg = uv;
+  color.rg = uv;
 
   FragColor = vec4(color, 1.);
 }

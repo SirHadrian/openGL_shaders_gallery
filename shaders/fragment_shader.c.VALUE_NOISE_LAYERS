@@ -71,7 +71,7 @@ main()
 {
   vec2 uv = FC.xy / R.xy;
   // uv -= .5;
-  uv.x *= R.x/R.y;
+  uv.x *= R.x / R.y;
 
   vec3 col = vec3(0.);
 

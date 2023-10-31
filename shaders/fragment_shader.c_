@@ -25,11 +25,11 @@ main()
 {
   vec2 uv = FC.xy / R.xy;
   uv -= .5;
-  uv.x *= R.x/R.y;
+  uv.x *= R.x / R.y;
 
-  vec3 col = vec3(0.);
+  vec3 color = vec3(0.);
 
-  col.rg = uv;
+  color.rg = uv;
 
-  FragColor = vec4(col, 1.);
+  FragColor = vec4(color, 1.);
 }

@@ -20,6 +20,15 @@ uniform vec2 u_mouse;
 #define PI 3.14159265359
 #define S(a, b, x) smoothstep(a, b, x)
 
+float 
+hash(vec2 seed) 
+{
+  vec2 m1 = vec2(324345., 435424.);
+  float m2 = 345232.;
+
+  return fract(sin(dot(seed, m1)) * m2);
+}
+
 void 
 main() 
 {
@@ -29,7 +38,11 @@ main()
 
   vec3 color = vec3(0.);
 
-  color.rg = uv;
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv);
+
+
+
 
   FragColor = vec4(color, 1.);
 }

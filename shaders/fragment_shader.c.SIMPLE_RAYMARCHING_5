@@ -1,0 +1,124 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+in vec3 color;
+in vec2 texCoord;
+
+uniform sampler2D tex0;
+// Load texture
+// vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+struct Ray {
+  vec3 ro;
+  vec3 rd;
+};
+
+float
+sphere_sdf(vec3 point, vec3 offset, float radius)
+{
+  return length(point - offset) - radius;
+}
+
+float 
+floor_sdf(vec3 p) { return p.y + .1; }
+
+float 
+smooth_union(float distA, float distB, float k ) {
+  float h = clamp(0.5 + 0.5*(distA-distB)/k, 0., 1.);
+  return mix(distA, distB, h) - k*h*(1.-h); 
+}
+
+float
+scene(vec3 point)
+{
+  float displacement = sin(5.0 * point.x + T) * sin(5.0 * point.y + T) * sin(5.0 * point.z + T) * 0.15;
+
+  float sphere = sphere_sdf(point, vec3(0., sin(T) * .1, 0.), .2) + displacement;
+  float floor = floor_sdf(point);
+
+  // float d = min(sphere, floor);
+  float d = smooth_union(sphere, floor, .1);
+
+  return d;
+}
+
+float 
+raymarching(Ray ray)
+{
+#define PRECISION 0.001
+#define MAX_STEPS 100
+#define MAX_DEPTH 50.
+
+  float depth = 0.;
+
+  for (int i = 0; i < MAX_STEPS; ++i)
+  {
+    vec3 cp = ray.ro + depth * ray.rd;
+
+    float cd = scene(cp);
+
+    if (cd < PRECISION) break;
+
+    depth += cd;
+
+    if (depth > MAX_DEPTH) break;
+  }
+  return depth;
+}
+
+vec3 
+get_normal(vec3 p) 
+{
+  vec2 d = vec2(0.01, 0.0);
+  float gx = scene(p + d.xyy) - scene(p - d.xyy);
+  float gy = scene(p + d.yxy) - scene(p - d.yxy);
+  float gz = scene(p + d.yyx) - scene(p - d.yyx);
+  vec3 normal = vec3(gx, gy, gz);
+  return normalize(normal);
+}
+
+void 
+main() 
+{
+  vec2 uv = FC.xy / R.xy;
+  uv -= .5;
+  uv.x *= R.x / R.y;
+
+  vec3 color = vec3(0.);
+
+  vec3 ro = vec3(0., 0., -1.);
+  vec3 rd = normalize(vec3(uv, 1));
+
+  Ray ray = { ro, rd };
+
+  float dist = raymarching(ray);
+
+  vec3 point = ray.ro + dist * ray.rd;
+  vec3 normal = get_normal(point);
+
+  vec3 light_position = vec3(0., 1., -1.);
+  vec3 light_vector = normalize(light_position - point);
+
+  float difuse_lighting = max(0., dot(light_vector, normal));
+
+  color = vec3(0.5, .5, 0.6) * difuse_lighting;
+
+  // if (dist < MAX_DEPTH)
+  // {
+  //   color = vec3(1., 0., 0.);
+  // }
+
+  FragColor = vec4(color, 1.);
+}

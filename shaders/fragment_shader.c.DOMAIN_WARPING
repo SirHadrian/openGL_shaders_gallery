@@ -1,0 +1,142 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+in vec3 color;
+in vec2 texCoord;
+
+uniform sampler2D tex0;
+// Load texture
+// vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+vec2 rand_grad(vec2 p) 
+{
+  p = p + 0.02;
+  float x = dot(p, vec2(123.4, 234.5));
+  float y = dot(p, vec2(234.5, 345.6));
+  vec2 gradient = vec2(x, y);
+  gradient = sin(gradient);
+  gradient = gradient * 43758.5453;
+
+  // update noise function with time
+  gradient = sin(gradient + u_time);
+  return gradient;
+
+  // gradient = sin(gradient);
+  // return gradient;
+}
+
+vec2 
+cubic(vec2 p) 
+{
+  return p * p * (3.0 - p * 2.0);
+}
+
+vec2 
+quintic(vec2 p) 
+{
+  return p * p * p * (10.0 + p * (-15.0 + p * 6.0));
+}
+
+float
+perlin_noise(vec2 uv)
+{
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv);
+
+  vec2 bl = id + vec2(0., 0.);
+  vec2 br = id + vec2(1., 0.);
+  vec2 tl = id + vec2(0., 1.);
+  vec2 tr = id + vec2(1., 1.);
+
+  vec2 grad_bl = rand_grad(bl);
+  vec2 grad_br = rand_grad(br);
+  vec2 grad_tl = rand_grad(tl);
+  vec2 grad_tr = rand_grad(tr);
+
+  vec2 dist_to_bl = gv - vec2(0.0, 0.0);
+  vec2 dist_to_br = gv - vec2(1.0, 0.0);
+  vec2 dist_to_tl = gv - vec2(0.0, 1.0);
+  vec2 dist_to_tr = gv - vec2(1.0, 1.0);
+
+  float dot_bl = dot(grad_bl, dist_to_bl);
+  float dot_br = dot(grad_br, dist_to_br);
+  float dot_tl = dot(grad_tl, dist_to_tl);
+  float dot_tr = dot(grad_tr, dist_to_tr);
+
+  gv = cubic(gv);
+  // gv = quintic(gv);
+  // gv = S(0.0, 1.0, gv);
+
+  float b = mix(dot_bl, dot_br, gv.x);
+  float t = mix(dot_tl, dot_tr, gv.x);
+
+  float perlin = mix(b, t, gv.y);
+  
+  // billow noise
+  // float billow = abs(perlin);
+  // color = vec3(billow);
+
+  // ridged noise
+  // float ridgedNoise = 1.0 - abs(perlin);
+  // ridgedNoise = ridgedNoise * ridgedNoise;
+  // color = vec3(ridgedNoise);
+
+  return perlin;
+}
+
+float 
+fbm(vec2 uv, int octaves)
+{
+  float fbm = 0.;
+
+  float lac = 2.;
+  float gain = .5;
+
+  float amp = .5;
+  float freq = 1.;
+
+  for (int i = 0; i < octaves; ++i)
+  {
+    fbm += amp * perlin_noise(uv * freq);
+
+    amp *= gain;
+    freq *= lac;
+  }
+  return fbm;
+}
+
+float
+domain_warping(vec2 uv)
+{
+  float fbm1 = fbm(uv + vec2(3., 1.), 7);
+  float fbm2 = fbm(uv + vec2(8.2, 4.3), 7);
+
+  return fbm(vec2(fbm1, fbm2), 7);
+}
+
+void 
+main() 
+{
+  vec2 uv = FC.xy / R.xy;
+  uv.x *= R.x / R.y;
+
+  uv *= 4.;
+
+  vec3 color = vec3(0.);
+
+  color = vec3(domain_warping(uv) + .3);
+
+  FragColor = vec4(color, 1.);
+}

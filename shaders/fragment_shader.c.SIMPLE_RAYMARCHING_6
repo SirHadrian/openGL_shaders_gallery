@@ -1,0 +1,139 @@
+#version 460 core
+layout(location = 0) out vec4 FragColor;
+
+in vec3 color;
+in vec2 texCoord;
+
+uniform sampler2D tex0;
+// Load texture
+// vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+#define T u_time
+#define R u_resolution
+#define FC gl_FragCoord
+#define M u_mouse
+
+#define PI 3.14159265359
+#define S(a, b, x) smoothstep(a, b, x)
+
+struct Ray {
+  vec3 ro;
+  vec3 rd;
+};
+
+float 
+white_noise(vec2 uv)
+{
+  vec2 r1 = vec2(18109.3, 9145.5453);
+  float r2 = 5445.12;
+
+  return fract(sin(dot(uv, r1)) * r2);
+}
+
+float
+value_noise(vec2 uv)
+{
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv);
+
+  gv = S(0., 1., gv);
+
+  float bl = white_noise(id);
+  float br = white_noise(id + vec2(1., 0));
+  float b = mix(bl, br, gv.x);
+
+  float tl = white_noise(id + vec2(0., 1.));
+  float tr = white_noise(id + vec2(1., 1.));
+  float t = mix(tl, tr, gv.x);
+
+  return mix(b, t, gv.y);
+}
+
+float 
+sphere_sdf(vec3 point, vec3 offset, float radius)
+{
+  return length(point - offset) - radius;
+}
+
+float
+plane_sdf(vec3 point)
+{
+  return point.y + .1;
+}
+
+float 
+scene(vec3 point)
+{
+  float dist = sphere_sdf(point, vec3(0.), .2);
+  dist = min(dist, plane_sdf(point));
+
+  return dist;
+}
+
+float
+ray_marching(Ray ray)
+{
+#define MAX_STEPS 100
+#define PRECISSION 0.001
+#define MAX_DEPTH 50.
+
+  float depth = 0.;
+
+  for (int i = 0; i < MAX_STEPS; ++i)
+  {
+    vec3 point = ray.ro + depth * ray.rd;
+
+    float cd = scene(point);
+
+    if (cd < PRECISSION) break;
+
+    depth += cd;
+
+    if (depth > MAX_DEPTH) break;
+  }
+  return depth;
+}
+
+vec3 
+get_normal(vec3 p) 
+{
+  vec2 d = vec2(0.01, 0.0);
+  float gx = scene(p + d.xyy) - scene(p - d.xyy);
+  float gy = scene(p + d.yxy) - scene(p - d.yxy);
+  float gz = scene(p + d.yyx) - scene(p - d.yyx);
+  vec3 normal = vec3(gx, gy, gz);
+  return normalize(normal);
+}
+
+void 
+main() 
+{
+  vec2 uv = FC.xy / R.xy;
+  uv -= .5;
+  uv.x *= R.x / R.y;
+
+  vec3 color = vec3(0.);
+
+  vec3 ro = vec3(0., 0., -1.);
+  vec3 rd = normalize(vec3(uv, 1.));
+
+  Ray ray = { ro, rd};
+
+  float dist = ray_marching(ray);
+
+  vec3 p = ray.ro + dist * ray.rd;
+  vec3 n = get_normal(p);
+
+  vec3 lp = vec3(0., 1., -1.);
+  vec3 lv = normalize(lp - p);
+
+  float dl = max(0, dot(lv, n));
+
+  color = dl * vec3(.5, .5, .6);
+
+  FragColor = vec4(color, 1.);
+}

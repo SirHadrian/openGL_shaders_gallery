@@ -21,7 +21,7 @@ uniform vec2 u_mouse;
 #define S(a, b, x) smoothstep(a, b, x)
 
 #define CELL_SIZE 1.
-#define LINE_SIZE 0.002
+#define LINE_SIZE 0.01
 
 vec3 
 drawGrid(vec2 uv) 
@@ -51,7 +51,7 @@ main()
 
   vec3 color = vec3(0.);
 
-  color += drawGrid(gv);
+  color.rg = uv;
 
   FragColor = vec4(color, 1.);
 }

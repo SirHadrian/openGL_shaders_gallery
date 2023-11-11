@@ -42,16 +42,115 @@ drawGrid(vec2 uv)
   return lines;
 }
 
+float
+ran(vec2 p)
+{
+  p = fract(p * vec2(123.34, 345.45));
+  p += dot(p, p + 34.345);
+  return fract(p.x * p.y);
+}
+
+float 
+white_noise(vec2 uv)
+{
+  vec2 r1 = vec2(18109.3, 9145.5453);
+  float r2 = 5445.12;
+
+  return fract(sin(dot(uv, r1)) * r2);
+}
+
+float
+value_noise(vec2 uv)
+{
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv);
+
+  gv = S(0., 1., gv);
+
+  float bl = white_noise(id);
+  float br = white_noise(id + vec2(1., 0));
+  float b = mix(bl, br, gv.x);
+
+  float tl = white_noise(id + vec2(0., 1.));
+  float tr = white_noise(id + vec2(1., 1.));
+  float t = mix(tl, tr, gv.x);
+
+  return mix(b, t, gv.y);
+}
+
+float
+value_noise_layers(vec2 uv, int layers)
+{
+  float ampt = 2;
+  float freq = 1;
+
+  float vnl = 0;
+
+  for (int i = 0; i < layers; ++i)
+  {
+    vnl += value_noise(uv * ampt) * freq;
+
+    ampt *= 2.;
+    freq /= 2.;
+  }
+  return vnl / 2.;
+}
+
 void 
 main() 
 {
   vec2 uv = FC.xy / R.xy;
-  uv -= .5;
   uv.x *= R.x / R.y;
 
+  vec2 pv = uv;
   vec3 color = vec3(0.);
 
-  color.rg = uv;
+  uv *= 6.;
+  vec2 aspect = vec2(2, 1);
+  uv *= aspect;
+
+  uv.y += T * .25;
+
+  vec2 id = floor(uv);
+  vec2 gv = fract(uv) - .5;
+
+  float n = ran(id);
+
+  float time = T + n * 2 * PI;
+
+  float w = pv.y * 10;
+  float x = (.5 - n) * .5;
+  x += (abs(x) - .8) * sin(3 * w) * pow(sin(w), 2) * .45;
+  // float x = sin(3 * w) * pow(sin(w), 4) * .45;
+  x *= .9;
+  float y = -sin(time + sin(time + sin(time) * .5)) * .45;
+
+  y -= (gv.x - x) * (gv.x - x);
+
+  vec2 dropPos = (gv - vec2(x, y)) / aspect;
+  float drop = S(.05, .03, length(dropPos));
+
+  vec2 trailPos = (gv - vec2(x, T * .25)) / aspect;
+  trailPos.y = (fract(trailPos.y * 8) -.5) / 8;
+  float trail = S(.03, .01, length(trailPos));
+
+  float fogTrail = S(-.05, .05, dropPos.y);
+  fogTrail *= S(.5, y, gv.y);
+  trail *= fogTrail;
+  fogTrail *= S(.05, .04, abs(dropPos.x));
+
+  color += drop;
+  color += trail;
+  color += fogTrail * .5;
+
+  color += drawGrid(uv);
+
+  vec2 fog = vec2(value_noise_layers(uv, 6));
+
+  vec2 offset = vec2(drop * dropPos + trail * trailPos) * vec2(1, -1);
+
+  vec4 text = texture(tex0, texCoord * vec2(-1., 1.) - fog * .02 - offset);
 
   FragColor = vec4(color, 1.);
+  FragColor = text; 
 }

@@ -45,6 +45,8 @@ do { \
   do {} while(0)
 #endif
 
+#define A_UNUSED __attribute__((unused))
+
 #define WIDTH 1920.0f
 #define HEIGHT 1080.0f
 
@@ -72,10 +74,13 @@ typedef unsigned int uint;
 typedef unsigned long int ulint;
 typedef unsigned char uchar;
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-static void cursor_position_callback(GLFWwindow *window, double xPos, double yPos);
-void cursor_enter_callback(GLFWwindow *window, int inside);
-void process_input(GLFWwindow *window, GLuint *shader_program);
-char* get_shader(char *shader_file);
-void die(const char *error);
+// Callbacks
+void framebuffer_size_callback(A_UNUSED GLFWwindow * window, int width, int height);
+static void cursor_position_callback(A_UNUSED GLFWwindow * window, double xPos, double yPos);
+void cursor_enter_callback(A_UNUSED GLFWwindow * window, int inside);
+
+void process_input(GLFWwindow * window, GLuint * shader_program);
+char* get_shader(char * shader_file);
 void compile_shaders(const GLuint *const shader_program);
+
+void die(char const * error);

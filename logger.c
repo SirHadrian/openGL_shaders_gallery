@@ -1,10 +1,7 @@
 #include "logger.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
-void 
-LOG(const char* tag, const char* message) 
+void
+LOG(char const * tag, char const * message)
 {
    time_t now;
    time(&now);

@@ -4,24 +4,24 @@
 GLfloat xMousePos, yMousePos = 0.f;
 Bool inWindow = False;
 
-int 
+int
 main(void)
 {
-  if (!glfwInit()) 
+  if(!glfwInit())
     die("Could not initialize GLFW");
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, MAJOR_VERS);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MINOR_VERS);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  void *start_fullscreen = NULL;
+  void * start_fullscreen = NULL;
   // void *start_fullscreen = glfwGetPrimaryMonitor();
 
   // Create GLFW window object
-  GLFWwindow *window =
+  GLFWwindow * window =
     glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
 
-  if (!window) 
+  if(!window)
   {
     glfwTerminate();
     die("Failed to create GLFW window");
@@ -31,7 +31,7 @@ main(void)
   glfwMakeContextCurrent(window);
 
   // Load glad
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) 
+  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     die("Failed to initialize GLAD");
 
   // Aria of the window for openGL to render
@@ -67,14 +67,14 @@ main(void)
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices,
       GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
       (void *)(3 * sizeof(float)));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
       (void *)(6 * sizeof(float)));
@@ -101,7 +101,7 @@ main(void)
   int imgWidth, imgHeigth, numColCh;
   // Flip image
   // stbi_set_flip_vertically_on_load(True);
-  uchar *bytes =
+  uchar * bytes =
     stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
 
   GLuint texture;
@@ -136,7 +136,7 @@ main(void)
   GLint tex0Uni = glGetUniformLocation(shader_program, UNIFORM_TEXTURE);
 
   // Render loop
-  while (!glfwWindowShouldClose(window)) 
+  while(!glfwWindowShouldClose(window))
   {
     // Input
     process_input(window, &shader_program);
@@ -182,20 +182,14 @@ main(void)
 }
 
 void
-framebuffer_size_callback(GLFWwindow *window, int width, int height) 
+process_input(GLFWwindow * window, GLuint * shader_program)
 {
-  glViewport(0, 0, width, height);
-}
-
-void 
-process_input(GLFWwindow *window, GLuint *shader_program) 
-{
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) ||
-      glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) 
+  if(glfwGetKey(window, GLFW_KEY_ESCAPE) ||
+      glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
   {
     glfwSetWindowShouldClose(window, TRUE);
   }
-  else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) 
+  else if(glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
   {
     glDeleteProgram(*shader_program);
     *shader_program = glCreateProgram();
@@ -203,9 +197,9 @@ process_input(GLFWwindow *window, GLuint *shader_program)
     compile_shaders(shader_program);
   }
   // Not working for some reason
-  // else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+  // else if(glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
   //   GLFWmonitor *monitor = glfwGetWindowMonitor(window);
-  //   if (monitor == NULL) {
+  //   if(monitor == NULL) {
   //     const GLFWvidmode *mode = glfwGetVideoMode(monitor);
   //     glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height,
   //                          mode->refreshRate);
@@ -215,25 +209,25 @@ process_input(GLFWwindow *window, GLuint *shader_program)
   // }
 }
 
-char*
-get_shader(char *shader_file)
+char *
+get_shader(char * shader_file)
 {
-  FILE *file = fopen(shader_file, "r");
-  if (!file)
+  FILE * file = fopen(shader_file, "r");
+  if(!file)
     ERROR_N_DIE(errno, shader_file);
 
   fseek(file, 0, SEEK_END);
   ulint length = (ulint)ftell(file);
   fseek(file, 0, SEEK_SET);
 
-  char *shader_string = malloc(sizeof *shader_string * (length + 1));
-  if (!shader_string) 
+  char * shader_string = malloc((sizeof *shader_string) * (length + 1));
+  if(!shader_string)
     ERROR_N_DIE(errno, "");
 
   int cursor;
   uint index = 0;
 
-  while ((cursor = fgetc(file)) != EOF) 
+  while((cursor = fgetc(file)) != EOF)
   {
     shader_string[index] = (char)cursor;
     index++;
@@ -246,16 +240,16 @@ get_shader(char *shader_file)
 }
 
 void
-die(const char *error) 
+die(char const * error)
 {
   fprintf(stderr, "ERROR: %s\n", error);
   exit(EXIT_FAILURE);
 }
 
-void 
-compile_shaders(const GLuint *const shader_program) 
+void
+compile_shaders(GLuint const * const shader_program)
 {
-  char *vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
+  char * vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
 
   GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, (char const *const *)&vertex_shader_source,
@@ -266,7 +260,7 @@ compile_shaders(const GLuint *const shader_program)
   char info_log[512];
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 
-  if (!success) 
+  if(!success)
   {
     glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
     fprintf(stderr, "Vertex shader compilation error: %s\n", info_log);
@@ -275,16 +269,16 @@ compile_shaders(const GLuint *const shader_program)
 
   free(vertex_shader_source);
 
-  char *fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
+  char * fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
 
   GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1,
-      (char const *const *)&fragment_shader_source, NULL);
+      (char const * const *)&fragment_shader_source, NULL);
   glCompileShader(fragment_shader);
 
   glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
 
-  if (!success) 
+  if(!success)
   {
     glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
     fprintf(stderr, "Fragment shader compilation error: %s\n", info_log);
@@ -298,7 +292,7 @@ compile_shaders(const GLuint *const shader_program)
   glLinkProgram(*shader_program);
 
   glGetProgramiv(*shader_program, GL_LINK_STATUS, &success);
-  if (!success) 
+  if(!success)
   {
     glGetProgramInfoLog(*shader_program, 512, NULL, info_log);
     fprintf(stderr, "Shader program linking error: %s\n", info_log);
@@ -309,21 +303,24 @@ compile_shaders(const GLuint *const shader_program)
   glDeleteShader(fragment_shader);
 }
 
-static void 
-cursor_position_callback(GLFWwindow *window, double xPos, double yPos) 
+static void
+cursor_position_callback(A_UNUSED GLFWwindow * window, double xPos, double yPos)
 {
-  if (inWindow) 
+  if(inWindow)
   {
     xMousePos = (GLfloat)xPos;
     yMousePos = (GLfloat)yPos;
   }
 }
 
-void 
-cursor_enter_callback(GLFWwindow *window, int inside) 
+void
+cursor_enter_callback(A_UNUSED GLFWwindow * window, int inside)
 {
-  if (inside) 
-    inWindow = True;
-  else 
-    inWindow = False;
+  inWindow = inside ? True : False;
+}
+
+void
+framebuffer_size_callback(A_UNUSED GLFWwindow * window, int width, int height)
+{
+  glViewport(0, 0, width, height);
 }

@@ -1,6 +1,6 @@
 TARGET=window.out
-SRCDIRS=.
-INCDIRS=.
+SRCDIRS=. ./src
+INCDIRS=. ./include
 
 CC=gcc
 LD=gcc
@@ -12,19 +12,22 @@ CFLAGS=$(DEPFLAGS) $(OPT) $(foreach D, $(INCDIRS), -I$(D)) -Wall -Wextra -Wconve
 LDFLAGS=-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lm -ldl
 
 CFILES=$(foreach D, $(SRCDIRS), $(wildcard $(D)/*.c))
-OBJECTS=$(patsubst %.c,%.o,$(CFILES))
-DEPFILES=$(patsubst %.c,%.d,$(CFILES))
+OBJECTS=$(patsubst %.c, %.o, $(CFILES))
+DEPFILES=$(patsubst %.c, %.d, $(CFILES))
 
 all: $(TARGET)
 	./$(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm *.o *.d window.out
+	rm $(TARGET) $(DEPFILES) $(OBJECTS)
+
+package: clean
+	tar -cvzf dist.tar.gz *
 
 -include $(DEPFILES)

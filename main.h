@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "stb_image.h"
+#include "include/stb_image.h"
 
 extern int errno;
 

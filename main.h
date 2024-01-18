@@ -80,7 +80,7 @@ static void cursor_position_callback(A_UNUSED GLFWwindow * window, double xPos, 
 void cursor_enter_callback(A_UNUSED GLFWwindow * window, int inside);
 
 void process_input(GLFWwindow * window, GLuint * shader_program);
-char* get_shader(char * shader_file);
-void compile_shaders(const GLuint *const shader_program);
+char * get_shader(char * shader_file);
+void compile_shaders(const GLuint * const shader_program);
 
 void die(char const * error);

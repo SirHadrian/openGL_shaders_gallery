@@ -1,18 +1,30 @@
+TARGET=window.out
+SRCDIRS=.
+INCDIRS=.
+
 CC=gcc
 LD=gcc
-CFLAGS=-Wall -Wextra -Wconversion -Wuninitialized
+
+DEPFLAGS=-MP -MD
+OPT=-O0
+
+CFLAGS=$(DEPFLAGS) $(OPT) $(foreach D, $(INCDIRS), -I$(D)) -Wall -Wextra -Wconversion -Wuninitialized
 LDFLAGS=-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lm -ldl
-OBJS=main.o glad.o stb_image.o
-TARGET=window.out
 
-all: ${TARGET}
-	./${TARGET}
+CFILES=$(foreach D, $(SRCDIRS), $(wildcard $(D)/*.c))
+OBJECTS=$(patsubst %.c,%.o,$(CFILES))
+DEPFILES=$(patsubst %.c,%.d,$(CFILES))
 
-${TARGET}: ${OBJS}
-	${LD} ${OBJS} ${LDFLAGS} -o ${TARGET}
+all: $(TARGET)
+	./$(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.c
-	${CC} ${CFLAGS} -c $<
+	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm *.o window.out
+	rm *.o *.d window.out
+
+-include $(DEPFILES)

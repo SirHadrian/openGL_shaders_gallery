@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#define INFO "INFO"
-#define DEBUG "DEBUG"
+#define INFO      "INFO"
+#define DEBUG     "DEBUG"
 
 void LOG(char const * tag, char const * message);
 

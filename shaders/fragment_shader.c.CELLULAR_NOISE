@@ -25,8 +25,8 @@ uniform vec2 u_mouse;
 // Increase the line size to make them appear.
 #define LINE_SIZE 0.011
 
-float 
-hash(vec2 seed) 
+float
+hash(vec2 seed)
 {
   vec2 m1 = vec2(324345., 435424.);
   float m2 = 345232.;
@@ -34,8 +34,8 @@ hash(vec2 seed)
   return fract(sin(dot(seed, m1)) * m2);
 }
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv.x *= R.x / R.y;
@@ -49,9 +49,9 @@ main()
 
   float field = 1.;
 
-  for (float y = -1.; y <= 1.; y += 1.) 
+  for (float y = -1.; y <= 1.; y += 1.)
   {
-    for (float x = -1.; x <= 1.; x += 1.) 
+    for (float x = -1.; x <= 1.; x += 1.)
     {
       vec2 neighbor = vec2(x, y);
 

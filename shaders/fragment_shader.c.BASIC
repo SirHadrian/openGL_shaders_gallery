@@ -20,7 +20,8 @@ uniform vec2 u_mouse;
 #define PI 3.14159265359
 #define S(a, b, x) smoothstep(a, b, x)
 
-void main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv-=.5;

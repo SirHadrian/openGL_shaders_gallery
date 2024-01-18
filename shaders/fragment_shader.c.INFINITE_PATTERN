@@ -13,7 +13,8 @@ uniform vec2 u_mouse;
 #define PI 3.14159265359
 #define S(a, b, x) smoothstep(a, b, x)
 
-float hash(vec2 seed)
+float
+hash(vec2 seed)
 {
   // Make the dot product of the seed with this random vec2.
   // Return values between 0 - 1.
@@ -24,7 +25,8 @@ float hash(vec2 seed)
   return fract(sin(dot(seed, r1)) * r2);
 }
 
-void main()
+void
+main()
 {
   vec2 uv = (FC.xy - .5 * R.xy) / R.y;
 

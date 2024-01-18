@@ -23,8 +23,8 @@ uniform vec2 u_mouse;
 #define CELL_SIZE 1.
 #define LINE_SIZE 0.01
 
-vec3 
-drawGrid(vec2 uv) 
+vec3
+drawGrid(vec2 uv)
 {
   // Draw grid.
   vec3 lines = vec3(0.);
@@ -42,8 +42,8 @@ drawGrid(vec2 uv)
   return lines;
 }
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv -= .5;

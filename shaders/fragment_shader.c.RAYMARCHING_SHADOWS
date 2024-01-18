@@ -1,27 +1,30 @@
 #version 460 core
 layout(location = 0) out vec4 FragColor;
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define MAX_MARCHING_STEPS 100.
-#define PRECISION 0.01
-#define MAX_DEPTH 50.
+#define MAX_STEPS     100.
+#define PRECISION     0.01
+#define MAX_DEPTH     50.
 
 struct Ray {
   vec3 ro;
   vec3 rd;
 };
 
-float sphere_sdf(vec3 point, vec3 offset, float radius) 
+float
+sphere_sdf(vec3 point, vec3 offset, float radius)
 {
   return length(point - offset) - radius;
 }
 
-float floor_sdf(vec3 point) { return point.y + 1.; }
+float
+floor_sdf(vec3 point) { return point.y + 1.; }
 
-float draw_scene(vec3 point) 
+float
+draw_scene(vec3 point)
 {
   // Adding multiple objects to a scene
   float dist = sphere_sdf(point, vec3(.2, 0., .4), .1);
@@ -33,7 +36,8 @@ float draw_scene(vec3 point)
   return dist;
 }
 
-vec3 calc_normal(vec3 p) 
+vec3
+calc_normal(vec3 p)
 {
   vec2 e = vec2(1.0, -1.0) * 0.005;
   return normalize(
@@ -41,7 +45,8 @@ vec3 calc_normal(vec3 p)
       e.yxy * draw_scene(p + e.yxy) + e.xxx * draw_scene(p + e.xxx));
 }
 
-float ray_march(Ray ray) 
+float
+ray_march(Ray ray)
 {
   // Depth(distance) already traveled by the ray
   float depth;
@@ -51,7 +56,7 @@ float ray_march(Ray ray)
   float distance_field;
 
   float i = 0.;
-  while (i < MAX_MARCHING_STEPS) 
+  while (i < MAX_STEPS)
   {
     // Calculate new origin location based on marched depth
     // Multiply depth with normalized vector rd to get get direction traveled
@@ -78,7 +83,8 @@ float ray_march(Ray ray)
   return depth;
 }
 
-void main() 
+void
+main()
 {
   vec2 uv = gl_FragCoord.xy / u_resolution.xy; // Normalize screen pixel coord 0 - 1
   uv -= .5;                                    // Move center of canvas to -0.5 - 0.5
@@ -103,7 +109,7 @@ void main()
   // Returns the distance from the ray marching algorithm
   float distance = ray_march(ray);
 
-  if (distance < MAX_DEPTH) 
+  if (distance < MAX_DEPTH)
   {
     // Final calculated point
     vec3 point = ray.ro + distance * ray.rd;
@@ -135,7 +141,7 @@ void main()
     // on (the current point is on the surface)
     // The direction of the ray is given by the normalized value from point to
     // the light
-    
+
     float d = ray_march(Ray(point + .1, light_vector));
 
     if (d < length(light_position - point))

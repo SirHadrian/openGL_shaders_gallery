@@ -1,19 +1,20 @@
 #version 460 core
 layout(location = 0) out vec4 FragColor;
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float     u_time;
+uniform vec2      u_resolution;
+uniform vec2      u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T         u_time
+#define R         u_resolution
+#define FC        gl_FragCoord
+#define M         u_mouse
 
-#define PI 3.14159265359
+#define PI        3.14159265359
 #define S(a, b, x) smoothstep(a, b, x)
 
-float hash(vec2 seed)
+float
+hash(vec2 seed)
 {
   // Make the dot product of the seed with this random vec2.
   // Return values between 0 - 1.
@@ -24,7 +25,8 @@ float hash(vec2 seed)
   return fract(sin(dot(seed, r1)) * r2);
 }
 
-float noise(vec2 uv)
+float
+noise(vec2 uv)
 {
   vec2 id, lv;
   id = floor(uv); // Each subspace set of coordinates.
@@ -48,7 +50,8 @@ float noise(vec2 uv)
   return mix(b, t, lv.y);
 }
 
-void main()
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   vec3 color = vec3(0);
@@ -63,7 +66,8 @@ void main()
   // Number of sub-spaces.
   uv *= 5.;
 
-  for (float i = 0.; i < octaves; i += 1.) {
+  for (float i = 0.; i < octaves; i += 1.)
+  {
     // Noise
     color += vec3(noise(uv * freqency) * amplitude);
     // Halven the impact each layer has on the result.

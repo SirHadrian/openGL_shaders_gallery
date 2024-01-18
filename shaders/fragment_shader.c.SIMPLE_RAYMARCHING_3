@@ -1,21 +1,24 @@
 #version 460 core
 layout(location = 0) out vec4 FragColor;
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define MAX_MARCHING_STEPS 255
-#define PRECISION 0.01
-#define MAX_DIST 50.
+#define MAX_STEPS     255
+#define PRECISION     0.01
+#define MAX_DIST      50.
 
 // Sphere signed distance function
-float sphere_sdf(vec3 p, vec3 offset) { return length(p - offset) - 0.1; }
+float
+sphere_sdf(vec3 p, vec3 offset) { return length(p - offset) - 0.1; }
 
 // Floor sdf
-float floor_sdf(vec3 p) { return p.y + 1.; }
+float
+floor_sdf(vec3 p) { return p.y + 1.; }
 
-float draw_scene(vec3 p) {
+float
+draw_scene(vec3 p) {
 
   // Adding multiple objects to a scene
   float d = sphere_sdf(p, vec3(0.2, 0, 0.4));
@@ -26,8 +29,9 @@ float draw_scene(vec3 p) {
   return d;
 }
 
-vec3 calc_normal(vec3 p) {
-
+vec3
+calc_normal(vec3 p)
+{
   vec2 e = vec2(1.0, -1.0) * 0.005;
   return normalize(e.xyy * draw_scene(p + e.xyy) +
                    e.yyx * draw_scene(p + e.yyx) +
@@ -36,8 +40,9 @@ vec3 calc_normal(vec3 p) {
   );
 }
 
-float ray_march(vec3 ro, vec3 rd) {
-
+float
+ray_march(vec3 ro, vec3 rd)
+{
   // Depth(distance) already traveled by the ray
   float depth;
   // The new location for the origin of the ray at the calculated depth
@@ -46,8 +51,8 @@ float ray_march(vec3 ro, vec3 rd) {
   float distance_field;
 
   int i = 0;
-  while (i < MAX_MARCHING_STEPS) {
-
+  while (i < MAX_STEPS)
+  {
     // Calculate new origin location based on marched depth
     // Multiply depth with normalized vector rd to get get direction to the
     // depth
@@ -72,8 +77,9 @@ float ray_march(vec3 ro, vec3 rd) {
   return depth;
 }
 
-void main() {
-
+void
+main()
+{
   vec2 uv =
       gl_FragCoord.xy / u_resolution.xy; // Normalize screen pixel coord 0 - 1
   uv -= .5;                              // Move center of canvas to -0.5 - 0.5
@@ -95,8 +101,8 @@ void main() {
 
   vec3 color = vec3(0.6);
 
-  if (d < MAX_DIST) {
-
+  if (d < MAX_DIST)
+  {
     // Final calculated point
     vec3 p = ro + d * rd;
     // Final point normal

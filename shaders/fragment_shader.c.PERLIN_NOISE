@@ -8,19 +8,21 @@ uniform sampler2D tex0;
 // Load texture
 // vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float     u_time;
+uniform vec2      u_resolution;
+uniform vec2      u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T         u_time
+#define R         u_resolution
+#define FC        gl_FragCoord
+#define M         u_mouse
 
-#define PI 3.14159265359
+#define PI        3.14159265359
 #define S(a, b, x) smoothstep(a, b, x)
 
-vec2 rand_grad(vec2 p) {
+vec2
+rand_grad(vec2 p)
+{
   p = p + 0.02;
   float x = dot(p, vec2(123.4, 234.5));
   float y = dot(p, vec2(234.5, 345.6));
@@ -36,20 +38,20 @@ vec2 rand_grad(vec2 p) {
   // return gradient;
 }
 
-vec2 
-cubic(vec2 p) 
+vec2
+cubic(vec2 p)
 {
   return p * p * (3.0 - p * 2.0);
 }
 
-vec2 
-quintic(vec2 p) 
+vec2
+quintic(vec2 p)
 {
   return p * p * p * (10.0 + p * (-15.0 + p * 6.0));
 }
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv.x *= R.x / R.y;
@@ -84,7 +86,7 @@ main()
   float dot_br = dot(grad_br, dist_to_br);
   float dot_tl = dot(grad_tl, dist_to_tl);
   float dot_tr = dot(grad_tr, dist_to_tr);
-  
+
   // gv = cuintic(0.0, 1.0, gv);
   gv = cubic(gv);
   // gv = S(0.0, 1.0, gv);

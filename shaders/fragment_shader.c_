@@ -8,23 +8,23 @@ uniform sampler2D tex0;
 // Load texture
 // vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T             u_time
+#define R             u_resolution
+#define FC            gl_FragCoord
+#define M             u_mouse
 
-#define PI 3.14159265359
-#define S(a, b, x) smoothstep(a, b, x)
+#define PI            3.14159265359
+#define S(a, b, x)    smoothstep(a, b, x)
 
-#define CELL_SIZE 1.
-#define LINE_SIZE 0.01
+#define CELL_SIZE     1.
+#define LINE_SIZE     0.01
 
-vec3 
-drawGrid(vec2 uv) 
+vec3
+drawGrid(vec2 uv)
 {
   // Draw grid.
   vec3 lines = vec3(0.);
@@ -42,8 +42,8 @@ drawGrid(vec2 uv)
   return lines;
 }
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv -= .5;

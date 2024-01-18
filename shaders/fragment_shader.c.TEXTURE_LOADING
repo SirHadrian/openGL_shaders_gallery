@@ -6,20 +6,21 @@ in vec2 texCoord;
 
 uniform sampler2D tex0;
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T             u_time
+#define R             u_resolution
+#define FC            gl_FragCoord
+#define M             u_mouse
 
-#define PI 3.14159265359
-#define S(a, b, x) smoothstep(a, b, x)
+#define PI            3.14159265359
+#define S(a, b, x)    smoothstep(a, b, x)
 
-void main() {
-
+void
+main()
+{
   vec2 uv = gl_FragCoord.xy / R.xy;
 
   vec4 text = texture(tex0, texCoord * vec2(-1., 1.));

@@ -8,17 +8,17 @@ uniform sampler2D tex0;
 // Load texture
 // vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T             u_time
+#define R             u_resolution
+#define FC            gl_FragCoord
+#define M             u_mouse
 
-#define PI 3.14159265359
-#define S(a, b, x) smoothstep(a, b, x)
+#define PI            3.14159265359
+#define S(a, b, x)    smoothstep(a, b, x)
 
 struct Ray {
   vec3 ro;
@@ -31,13 +31,13 @@ sphere_sdf(vec3 point, vec3 offset, float radius)
   return length(point - offset) - radius;
 }
 
-float 
+float
 floor_sdf(vec3 p) { return p.y + .1; }
 
-float 
+float
 smooth_union(float distA, float distB, float k ) {
   float h = clamp(0.5 + 0.5*(distA-distB)/k, 0., 1.);
-  return mix(distA, distB, h) - k*h*(1.-h); 
+  return mix(distA, distB, h) - k*h*(1.-h);
 }
 
 float
@@ -54,7 +54,7 @@ scene(vec3 point)
   return d;
 }
 
-float 
+float
 raymarching(Ray ray)
 {
 #define PRECISION 0.001
@@ -78,8 +78,8 @@ raymarching(Ray ray)
   return depth;
 }
 
-vec3 
-get_normal(vec3 p) 
+vec3
+get_normal(vec3 p)
 {
   vec2 d = vec2(0.01, 0.0);
   float gx = scene(p + d.xyy) - scene(p - d.xyy);
@@ -89,8 +89,8 @@ get_normal(vec3 p)
   return normalize(normal);
 }
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv -= .5;

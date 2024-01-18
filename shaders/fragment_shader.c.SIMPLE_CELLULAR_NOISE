@@ -8,20 +8,20 @@ uniform sampler2D tex0;
 // Load texture
 // vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T             u_time
+#define R             u_resolution
+#define FC            gl_FragCoord
+#define M             u_mouse
 
-#define PI 3.14159265359
-#define S(a, b, x) smoothstep(a, b, x)
+#define PI            3.14159265359
+#define S(a, b, x)    smoothstep(a, b, x)
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv.x *= R.x / R.y;
@@ -39,7 +39,7 @@ main()
 
   float mdist = 1.;
 
-  for (float i = 0.; i < 5.; i += 1.) 
+  for (float i = 0.; i < 5.; i += 1.)
   {
     float dist = distance(uv, point[int(i)]);
     mdist = min(mdist, dist);

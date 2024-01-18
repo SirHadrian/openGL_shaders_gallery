@@ -1,23 +1,21 @@
 #version 460 core
 layout(location = 0) out vec4 FragColor;
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float       u_time;
+uniform vec2        u_resolution;
+uniform vec2        u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T           u_time
+#define R           u_resolution
+#define FC          gl_FragCoord
+#define M           u_mouse
 
-#define MAX_MARCHING_STEPS 255
-#define PRECISION 0.001
-#define MAX_DIST 100.
-#define MIN_DIST 0.0
-#define PI 3.14159265359
-#define EPSILON 0.0005
-
-float sdSphere(vec3 p, float r) { return length(p) - r; }
+#define MAX_STEPS   255
+#define PRECISION   0.001
+#define MAX_DIST    100.
+#define MIN_DIST    0.0
+#define PI          3.14159265359
+#define EPSILON     0.0005
 
 struct Material {
   vec3 ambientColor;  // k_a * i_a
@@ -32,7 +30,11 @@ struct Surface {
   Material mat;
 };
 
-Material gold()
+float
+sdSphere(vec3 p, float r) { return length(p) - r; }
+
+Material
+gold()
 {
   vec3 aCol = 0.5 * vec3(0.7, 0.5, 0);
   vec3 dCol = 0.6 * vec3(0.7, 0.7, 0);
@@ -42,7 +44,8 @@ Material gold()
   return Material(aCol, dCol, sCol, a);
 }
 
-Material silver()
+Material
+silver()
 {
   vec3 aCol = 0.4 * vec3(0.8);
   vec3 dCol = 0.5 * vec3(0.7);
@@ -52,7 +55,8 @@ Material silver()
   return Material(aCol, dCol, sCol, a);
 }
 
-Material checkerboard(vec3 p)
+Material
+checkerboard(vec3 p)
 {
   vec3 aCol = vec3(1. + 0.7 * mod(floor(p.x) + floor(p.z), 2.0)) * 0.3;
   vec3 dCol = vec3(0.3);
@@ -62,7 +66,8 @@ Material checkerboard(vec3 p)
   return Material(aCol, dCol, sCol, a);
 }
 
-Surface opUnion(Surface obj1, Surface obj2)
+Surface
+opUnion(Surface obj1, Surface obj2)
 {
   if (obj2.sd < obj1.sd)
     return obj2;
@@ -70,7 +75,8 @@ Surface opUnion(Surface obj1, Surface obj2)
   return obj1;
 }
 
-Surface scene(vec3 p)
+Surface
+scene(vec3 p)
 {
   Surface sFloor = Surface(1, p.y + 1., checkerboard(p));
   Surface sSphereGold = Surface(2, sdSphere(p - vec3(-2, 0, 0), 1.), gold());
@@ -81,12 +87,13 @@ Surface scene(vec3 p)
   return co;
 }
 
-Surface rayMarch(vec3 ro, vec3 rd)
+Surface
+rayMarch(vec3 ro, vec3 rd)
 {
   float depth = MIN_DIST;
   Surface co;
 
-  for (int i = 0; i < MAX_MARCHING_STEPS; i++) 
+  for (int i = 0; i < MAX_STEPS; i++)
   {
     vec3 p = ro + depth * rd;
     co = scene(p);
@@ -99,14 +106,16 @@ Surface rayMarch(vec3 ro, vec3 rd)
   return co;
 }
 
-vec3 calcNormal(vec3 p) 
+vec3
+calcNormal(vec3 p)
 {
   vec2 e = vec2(1.0, -1.0) * 0.0005;
   return normalize(e.xyy * scene(p + e.xyy).sd + e.yyx * scene(p + e.yyx).sd +
                    e.yxy * scene(p + e.yxy).sd + e.xxx * scene(p + e.xxx).sd);
 }
 
-mat3 camera(vec3 cameraPos, vec3 lookAtPoint) 
+mat3
+camera(vec3 cameraPos, vec3 lookAtPoint)
 {
   vec3 cd = normalize(lookAtPoint - cameraPos);  // camera direction
   vec3 cr = normalize(cross(vec3(0, 1, 0), cd)); // camera right
@@ -115,7 +124,8 @@ mat3 camera(vec3 cameraPos, vec3 lookAtPoint)
   return mat3(-cr, cu, -cd);
 }
 
-vec3 phong(vec3 lightDir, vec3 normal, vec3 rd, Material mat) 
+vec3
+phong(vec3 lightDir, vec3 normal, vec3 rd, Material mat)
 {
   // ambient
   vec3 ambient = mat.ambientColor;
@@ -131,7 +141,8 @@ vec3 phong(vec3 lightDir, vec3 normal, vec3 rd, Material mat)
   return ambient + diffuse + specular;
 }
 
-void main() 
+void
+main()
 {
   vec2 uv = (FC.xy - .5 * R.xy) / R.y;
   vec3 backgroundColor = mix(vec3(1, .341, .2), vec3(0, 1, 1), uv.y) * 1.6;
@@ -144,11 +155,11 @@ void main()
 
   Surface co = rayMarch(ro, rd); // closest object
 
-  if (co.sd > MAX_DIST) 
+  if (co.sd > MAX_DIST)
   {
     col = backgroundColor;
-  } 
-  else 
+  }
+  else
   {
     vec3 p = ro + rd * co.sd;    // point on surface found by ray marching
     vec3 normal = calcNormal(p); // surface normal

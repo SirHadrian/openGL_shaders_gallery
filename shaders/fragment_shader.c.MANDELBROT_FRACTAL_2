@@ -16,16 +16,18 @@ uniform vec2 u_mouse;
 #define N 24.
 #define B 4.
 
-vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) 
+vec3
+palette(float t, vec3 a, vec3 b, vec3 c, vec3 d)
 {
   return a + b * cos(6.28318 * (c * t + d));
 }
 
-float iterate(vec2 p) 
+float
+iterate(vec2 p)
 {
   vec2 z = vec2(0), c = p;
   float i;
-  for (i = 0.; i < N; i++) 
+  for (i = 0.; i < N; i++)
   {
     z = mat2(z, -z.y, z.x) * z + c;
     if (dot(z, z) > B * B)
@@ -34,7 +36,8 @@ float iterate(vec2 p)
   return i - log(log(dot(z, z)) / log(B)) / log(2.);
 }
 
-void main() 
+void
+main()
 {
   vec2 uv = (2. * FC.xy - R.xy) / R.y;
 

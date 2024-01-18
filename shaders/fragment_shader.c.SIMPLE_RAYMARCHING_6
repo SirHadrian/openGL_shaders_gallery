@@ -8,24 +8,24 @@ uniform sampler2D tex0;
 // Load texture
 // vec4 text = texture(tex0, texCoord * vec2(-1., 1.));
 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+uniform float         u_time;
+uniform vec2          u_resolution;
+uniform vec2          u_mouse;
 
-#define T u_time
-#define R u_resolution
-#define FC gl_FragCoord
-#define M u_mouse
+#define T             u_time
+#define R             u_resolution
+#define FC            gl_FragCoord
+#define M             u_mouse
 
-#define PI 3.14159265359
-#define S(a, b, x) smoothstep(a, b, x)
+#define PI            3.14159265359
+#define S(a, b, x)    smoothstep(a, b, x)
 
 struct Ray {
   vec3 ro;
   vec3 rd;
 };
 
-float 
+float
 white_noise(vec2 uv)
 {
   vec2 r1 = vec2(18109.3, 9145.5453);
@@ -53,7 +53,7 @@ value_noise(vec2 uv)
   return mix(b, t, gv.y);
 }
 
-float 
+float
 sphere_sdf(vec3 point, vec3 offset, float radius)
 {
   return length(point - offset) - radius;
@@ -65,7 +65,7 @@ plane_sdf(vec3 point)
   return point.y + .1;
 }
 
-float 
+float
 scene(vec3 point)
 {
   float dist = sphere_sdf(point, vec3(0.), .2);
@@ -77,9 +77,9 @@ scene(vec3 point)
 float
 ray_marching(Ray ray)
 {
-#define MAX_STEPS 100
-#define PRECISSION 0.001
-#define MAX_DEPTH 50.
+#define MAX_STEPS   100
+#define PRECISION   0.001
+#define MAX_DEPTH   50.
 
   float depth = 0.;
 
@@ -89,7 +89,7 @@ ray_marching(Ray ray)
 
     float cd = scene(point);
 
-    if (cd < PRECISSION) break;
+    if (cd < PRECISION) break;
 
     depth += cd;
 
@@ -98,8 +98,8 @@ ray_marching(Ray ray)
   return depth;
 }
 
-vec3 
-get_normal(vec3 p) 
+vec3
+get_normal(vec3 p)
 {
   vec2 d = vec2(0.01, 0.0);
   float gx = scene(p + d.xyy) - scene(p - d.xyy);
@@ -109,8 +109,8 @@ get_normal(vec3 p)
   return normalize(normal);
 }
 
-void 
-main() 
+void
+main()
 {
   vec2 uv = FC.xy / R.xy;
   uv -= .5;

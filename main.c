@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -8,7 +9,7 @@
 
 // Cursor state
 GLfloat xMousePos = 0.f, yMousePos = 0.f;
-Bool inWindow = False;
+Bool inside_window = False;
 
 int
 main(void)
@@ -23,7 +24,6 @@ main(void)
         void * start_fullscreen = NULL;
         // void * start_fullscreen = glfwGetPrimaryMonitor();
         GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
-
         if (!window) {
                 glfwTerminate();
                 die("Failed to create GLFW window");
@@ -33,10 +33,12 @@ main(void)
         glfwMakeContextCurrent(window);
 
         // Load glad
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+                glfwTerminate();
                 die("Failed to initialize GLAD");
+        }
 
-        // Aria of the window for openGL to render
+        // Area of the window for openGL to render
         glViewport(0, 0, WIDTH, HEIGHT);
 
         // Window resize events
@@ -55,7 +57,7 @@ main(void)
                 -1.0f, 1.0f,  0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f  // Lower right corner
         };
 
-        uint indices[] = {
+        GLuint indices[] = {
                 // note that we start from 0!
                 0, 1, 3, // first triangle
                 1, 2, 3  // second triangle
@@ -75,30 +77,25 @@ main(void)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(6 * sizeof(GLfloat)));
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-        // glEnableVertexAttribArray(1);
-
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
         glBindVertexArray(0);
 
         // Shader program
         GLuint shader_program = glCreateProgram();
-
         compile_shaders(&shader_program);
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // Texture
-        int imgWidth, imgHeigth, numColCh;
+        GLint imgWidth, imgHeigth, numColCh;
         // Flip image
         // stbi_set_flip_vertically_on_load(True);
         uchar * bytes = stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
@@ -157,7 +154,6 @@ main(void)
                 glBindVertexArray(VAO);
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                 // glDrawArrays(GL_TRIANGLES, 0, 3);
-                // glBindVertexArray(0);
 
                 // Swap buffers and pull IO events
                 glfwSwapBuffers(window);
@@ -175,13 +171,14 @@ main(void)
         glDeleteProgram(shader_program);
 
         // Destroy current window and terminate GLFW
+        glfwDestroyWindow(window);
         glfwTerminate();
 
         return EXIT_SUCCESS;
 }
 
 void
-process_input(GLFWwindow * window, GLuint * shader_program)
+process_input(GLFWwindow * const window, GLuint * const shader_program)
 {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -232,7 +229,7 @@ get_shader(char * shader_file)
 }
 
 void
-die(char const * error)
+die(char const * const error)
 {
         fprintf(stderr, "ERROR: %s\n", error);
         exit(EXIT_FAILURE);
@@ -247,7 +244,7 @@ compile_shaders(GLuint const * const shader_program)
         glShaderSource(vertex_shader, 1, (char const *const *)&vertex_shader_source, NULL);
         glCompileShader(vertex_shader);
 
-        int success;
+        GLint success;
         char info_log[512];
 
         glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
@@ -264,8 +261,8 @@ compile_shaders(GLuint const * const shader_program)
 
         glShaderSource(fragment_shader, 1, (char const * const *)&fragment_shader_source, NULL);
         glCompileShader(fragment_shader);
-        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
 
+        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
         if (!success) {
                 glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
                 fprintf(stderr, "Fragment shader compilation error: %s\n", info_log);
@@ -292,7 +289,7 @@ compile_shaders(GLuint const * const shader_program)
 static void
 cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double yPos)
 {
-        if (inWindow) {
+        if (inside_window) {
                 xMousePos = (GLfloat)xPos;
                 yMousePos = (GLfloat)yPos;
         }
@@ -301,7 +298,7 @@ cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double y
 void
 cursor_enter_callback(ALLOW_UNUSED GLFWwindow * window, int inside)
 {
-        inWindow = inside ? True : False;
+        inside_window = inside ? True : False;
 }
 
 void

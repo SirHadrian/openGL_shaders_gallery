@@ -3,15 +3,7 @@
 
 extern int errno;
 
-#define DEBUG
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
+#define DBG
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0

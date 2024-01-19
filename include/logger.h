@@ -4,7 +4,7 @@
 #define INFO      "INFO"
 #define DEBUG     "DEBUG"
 
-#ifdef DEBUG
+#ifdef DBG
 #define D(msg) \
         do { \
                 fprintf(stderr, "DEBUG: %s:%d - %s\n", __FILE__, __LINE__, msg); \

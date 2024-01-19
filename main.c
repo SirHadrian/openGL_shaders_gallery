@@ -22,8 +22,7 @@ main(void)
 
         void * start_fullscreen = NULL;
         // void * start_fullscreen = glfwGetPrimaryMonitor();
-        GLFWwindow * window =
-                glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
+        GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
 
         if (!window) {
                 glfwTerminate();
@@ -74,21 +73,17 @@ main(void)
         glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices,
-                        GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(6 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-        //                       (void *)(3 * sizeof(float)));
+        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
         // glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -106,8 +101,7 @@ main(void)
         int imgWidth, imgHeigth, numColCh;
         // Flip image
         // stbi_set_flip_vertically_on_load(True);
-        uchar * bytes =
-                stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
+        uchar * bytes = stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
         GLuint texture;
 
         glGenTextures(1, &texture);
@@ -121,8 +115,7 @@ main(void)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         // For images with an alpha channel use GL_RGBA
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeigth, 0, GL_RGB,
-                        GL_UNSIGNED_BYTE, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeigth, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
 
         glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -134,8 +127,7 @@ main(void)
         // u_time uniform
         GLint u_time_location = glGetUniformLocation(shader_program, UNIFORM_TIME);
         // u_resolution uniform
-        GLint u_resolution_location =
-                glGetUniformLocation(shader_program, UNIFORM_RESOLUTION);
+        GLint u_resolution_location = glGetUniformLocation(shader_program, UNIFORM_RESOLUTION);
         // u_mouse uniform
         GLint u_mouse_location = glGetUniformLocation(shader_program, UNIFORM_MOUSE);
         // texture uniform
@@ -192,7 +184,7 @@ void
 process_input(GLFWwindow * window, GLuint * shader_program)
 {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-                glfwSetWindowShouldClose(window, TRUE);
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
         } else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
                 glDeleteProgram(*shader_program);
                 *shader_program = glCreateProgram();
@@ -252,8 +244,7 @@ compile_shaders(GLuint const * const shader_program)
         char * vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
-        glShaderSource(vertex_shader, 1, (char const *const *)&vertex_shader_source,
-                        NULL);
+        glShaderSource(vertex_shader, 1, (char const *const *)&vertex_shader_source, NULL);
         glCompileShader(vertex_shader);
 
         int success;
@@ -271,8 +262,7 @@ compile_shaders(GLuint const * const shader_program)
         char * fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
         GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
-        glShaderSource(fragment_shader, 1,
-                        (char const * const *)&fragment_shader_source, NULL);
+        glShaderSource(fragment_shader, 1, (char const * const *)&fragment_shader_source, NULL);
         glCompileShader(fragment_shader);
         glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
 

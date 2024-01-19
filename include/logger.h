@@ -9,4 +9,4 @@
 
 void LOG(char const * tag, char const * message);
 
-#endif
+#endif /* LOGGER_H */

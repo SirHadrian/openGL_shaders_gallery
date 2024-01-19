@@ -29,23 +29,24 @@ extern int errno;
 #endif
 
 #define ERROR_N_DIE(errno, msg) \
-do { \
-  fprintf(stderr, "ERROR: %s:%d - %s | %s\n", __FILE__, __LINE__, \
-      strerror(errno), msg); \
-  exit(EXIT_FAILURE); \
-} while(0)
+        do { \
+                fprintf(stderr, "ERROR: %s:%d - %s | %s\n", __FILE__, __LINE__, \
+                                strerror(errno), msg); \
+                exit(EXIT_FAILURE); \
+        } while(0)
 
 #ifdef DEBUG
 #define D(msg) \
-  do { \
-    fprintf(stderr, "DEBUG: %s:%d - %s\n", __FILE__, __LINE__, msg); \
-  } while(0)
+        do { \
+                fprintf(stderr, "DEBUG: %s:%d - %s\n", __FILE__, __LINE__, msg); \
+        } while(0)
 #else
 #define D(x) \
-  do {} while(0)
+        do {} while(0)
 #endif
 
 #define A_UNUSED __attribute__((unused))
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #define WIDTH                   1920.0f
 #define HEIGHT                  1080.0f

@@ -1,13 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <math.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-
-#include "include/stb_image.h"
-
 extern int errno;
 
 #define DEBUG
@@ -25,7 +18,7 @@ extern int errno;
 #endif
 
 #ifndef EXIT_FAILURE
-#define EXIT_FAILURE -1
+#define EXIT_FAILURE 1
 #endif
 
 #define ERROR_N_DIE(errno, msg) \
@@ -35,17 +28,7 @@ extern int errno;
                 exit(EXIT_FAILURE); \
         } while(0)
 
-#ifdef DEBUG
-#define D(msg) \
-        do { \
-                fprintf(stderr, "DEBUG: %s:%d - %s\n", __FILE__, __LINE__, msg); \
-        } while(0)
-#else
-#define D(x) \
-        do {} while(0)
-#endif
-
-#define A_UNUSED __attribute__((unused))
+#define ALLOW_UNUSED __attribute__((unused))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #define WIDTH                   1920.0f
@@ -54,7 +37,7 @@ extern int errno;
 // #define WIDTH                800.0f
 // #define HEIGHT               600.0f
 
-#define TITLE                   "OpenGL Template"
+#define TITLE                   "OpenGL Gallery"
 
 #define UNIFORM_TIME            "u_time"
 #define UNIFORM_MOUSE           "u_mouse"
@@ -76,12 +59,12 @@ typedef unsigned long int   ulint;
 typedef unsigned char       uchar;
 
 // Callbacks
-void framebuffer_size_callback(A_UNUSED GLFWwindow * window, int width, int height);
-static void cursor_position_callback(A_UNUSED GLFWwindow * window, double xPos, double yPos);
-void cursor_enter_callback(A_UNUSED GLFWwindow * window, int inside);
+void framebuffer_size_callback(ALLOW_UNUSED GLFWwindow * window, int width, int height);
+static void cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double yPos);
+void cursor_enter_callback(ALLOW_UNUSED GLFWwindow * window, int inside);
 
 void process_input(GLFWwindow * window, GLuint * shader_program);
 char * get_shader(char * shader_file);
-void compile_shaders(const GLuint * const shader_program);
+void compile_shaders(GLuint const * const shader_program);
 
 void die(char const * error);

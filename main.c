@@ -1,5 +1,11 @@
 #include "main.h"
 
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+
+#include "include/stb_image.h"
+
 // Cursor state
 GLfloat xMousePos = 0.f, yMousePos = 0.f;
 Bool inWindow = False;
@@ -294,7 +300,7 @@ compile_shaders(GLuint const * const shader_program)
 }
 
 static void
-cursor_position_callback(A_UNUSED GLFWwindow * window, double xPos, double yPos)
+cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double yPos)
 {
         if (inWindow) {
                 xMousePos = (GLfloat)xPos;
@@ -303,13 +309,13 @@ cursor_position_callback(A_UNUSED GLFWwindow * window, double xPos, double yPos)
 }
 
 void
-cursor_enter_callback(A_UNUSED GLFWwindow * window, int inside)
+cursor_enter_callback(ALLOW_UNUSED GLFWwindow * window, int inside)
 {
         inWindow = inside ? True : False;
 }
 
 void
-framebuffer_size_callback(A_UNUSED GLFWwindow * window, int width, int height)
+framebuffer_size_callback(ALLOW_UNUSED GLFWwindow * window, int width, int height)
 {
         glViewport(0, 0, width, height);
 }

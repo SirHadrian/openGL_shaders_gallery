@@ -8,8 +8,7 @@
 GLfloat xMousePos = 0.f, yMousePos = 0.f;
 Bool inside_window = False;
 
-int
-main(void)
+int main(void)
 {
         if (!glfwInit())
                 die("Could not initialize GLFW");
@@ -18,9 +17,9 @@ main(void)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MINOR_VERS);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        void * start_fullscreen = NULL;
+        void *start_fullscreen = NULL;
         // void * start_fullscreen = glfwGetPrimaryMonitor();
-        GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
+        GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
         if (!window) {
                 glfwTerminate();
                 die("Failed to create GLFW window");
@@ -96,7 +95,7 @@ main(void)
         GLint imgWidth, imgHeigth, numColCh;
         // Flip image
         // stbi_set_flip_vertically_on_load(True);
-        uchar * bytes = stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
+        uchar *bytes = stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
         GLuint texture;
 
         glGenTextures(1, &texture);
@@ -175,8 +174,7 @@ main(void)
         return EXIT_SUCCESS;
 }
 
-void
-process_input(GLFWwindow * const window, GLuint * const shader_program)
+void process_input(GLFWwindow *const window, GLuint *const shader_program)
 {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -198,15 +196,13 @@ process_input(GLFWwindow * const window, GLuint * const shader_program)
         // }
 }
 
-void
-die(char const * const error)
+void die(char const *const error)
 {
         fprintf(stderr, "ERROR: %s\n", error);
         exit(EXIT_FAILURE);
 }
 
-static void
-cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double yPos)
+static void cursor_position_callback(ALLOW_UNUSED GLFWwindow *window, double xPos, double yPos)
 {
         if (inside_window) {
                 xMousePos = (GLfloat)xPos;
@@ -214,14 +210,12 @@ cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double y
         }
 }
 
-void
-cursor_enter_callback(ALLOW_UNUSED GLFWwindow * window, int inside)
+void cursor_enter_callback(ALLOW_UNUSED GLFWwindow *window, int inside)
 {
         inside_window = inside ? True : False;
 }
 
-void
-framebuffer_size_callback(ALLOW_UNUSED GLFWwindow * window, int width, int height)
+void framebuffer_size_callback(ALLOW_UNUSED GLFWwindow *window, int width, int height)
 {
         glViewport(0, 0, width, height);
 }

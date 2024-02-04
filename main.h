@@ -24,9 +24,9 @@
 #define MINOR_VERS              6
 
 // Callbacks
-void framebuffer_size_callback(ALLOW_UNUSED GLFWwindow * window, int width, int height);
-static void cursor_position_callback(ALLOW_UNUSED GLFWwindow * window, double xPos, double yPos);
-void cursor_enter_callback(ALLOW_UNUSED GLFWwindow * window, int inside);
+void framebuffer_size_callback(ALLOW_UNUSED GLFWwindow *window, int width, int height);
+static void cursor_position_callback(ALLOW_UNUSED GLFWwindow *window, double xPos, double yPos);
+void cursor_enter_callback(ALLOW_UNUSED GLFWwindow *window, int inside);
 
-void process_input(GLFWwindow * const window, GLuint * const shader_program);
-void die(char const * const error);
+void process_input(GLFWwindow *const window, GLuint *const shader_program);
+void die(char const *const error);

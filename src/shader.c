@@ -6,10 +6,9 @@
 #include "../include/shader.h"
 #include "../include/utils.h"
 
-char *
-get_shader(char * shader_file)
+GLchar *const get_shader(char *shader_file)
 {
-        FILE * file = fopen(shader_file, "r");
+        FILE *file = fopen(shader_file, "r");
         if (!file)
                 ERROR_N_DIE(errno, shader_file);
 
@@ -17,7 +16,7 @@ get_shader(char * shader_file)
         ulint length = (ulint)ftell(file);
         fseek(file, 0, SEEK_SET);
 
-        char * shader_string = malloc((sizeof *shader_string) * (length + 1));
+        GLchar *shader_string = malloc((sizeof *shader_string) * (length + 1));
         if (!shader_string)
                 ERROR_N_DIE(errno, "");
 
@@ -34,13 +33,12 @@ get_shader(char * shader_file)
         return shader_string;
 }
 
-void
-compile_shaders(GLuint const * const shader_program)
+void compile_shaders(GLuint const *const shader_program)
 {
-        char * vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
+        GLchar *const vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
-        glShaderSource(vertex_shader, 1, (char const *const *)&vertex_shader_source, NULL);
+        glShaderSource(vertex_shader, 1, (GLchar const **)&vertex_shader_source, NULL);
         glCompileShader(vertex_shader);
 
         GLint success;
@@ -55,10 +53,10 @@ compile_shaders(GLuint const * const shader_program)
 
         free(vertex_shader_source);
 
-        char * fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
+        GLchar *const fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
         GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
-        glShaderSource(fragment_shader, 1, (char const * const *)&fragment_shader_source, NULL);
+        glShaderSource(fragment_shader, 1, (GLchar const **)&fragment_shader_source, NULL);
         glCompileShader(fragment_shader);
 
         glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);

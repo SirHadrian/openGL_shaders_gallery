@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <glad/glad.h>
 
-#include "../include/shader.h"
-#include "../include/utils.h"
+#include "shader.h"
+#include "utils.h"
 
 GLchar *const get_shader(char *shader_file)
 {

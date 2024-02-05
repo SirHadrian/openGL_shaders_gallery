@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "include/utils.h"
+#include "src/utils.h"
 
 #define DBG
 

@@ -1,6 +1,5 @@
 TARGET=window.out
 SRCDIRS=. ./src
-INCDIRS=. ./include
 
 CC=gcc
 LD=gcc
@@ -8,7 +7,7 @@ LD=gcc
 DEPFLAGS=-MP -MD
 OPT=-O0
 
-CFLAGS=$(DEPFLAGS) $(OPT) $(foreach D, $(INCDIRS), -I$(D)) -Wall -Wextra -Wconversion -Wuninitialized
+CFLAGS=$(DEPFLAGS) $(OPT) -Wall -Wextra -Wconversion -Wuninitialized
 LDFLAGS=-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lm -ldl
 
 CFILES=$(foreach D, $(SRCDIRS), $(wildcard $(D)/*.c))

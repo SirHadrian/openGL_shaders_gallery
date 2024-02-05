@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 #include "main.h"
-#include "include/shader.h"
-#include "include/stb_image.h"
+#include "src/shader.h"
+#include "src/stb_image.h"
 
 // Cursor state
 GLfloat xMousePos = 0.f, yMousePos = 0.f;

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "logger.h"
+
 char const *const tags[] = {
         "DEBUG",
         "INFO"

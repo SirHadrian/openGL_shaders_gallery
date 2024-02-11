@@ -3,7 +3,7 @@
 
 enum tag {
         DEBUG = 0,
-        INFO
+        INFO,
 };
 
 #ifdef DBG

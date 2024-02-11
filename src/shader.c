@@ -6,19 +6,22 @@
 #include "shader.h"
 #include "utils.h"
 
-GLchar *const get_shader(char *shader_file)
+GLchar *const
+get_shader(char *shader_file)
 {
         FILE *file = fopen(shader_file, "r");
-        if (!file)
+        if (file == NULL) {
                 ERROR_N_DIE(errno, shader_file);
+        }
 
         fseek(file, 0, SEEK_END);
         ulint length = (ulint)ftell(file);
         fseek(file, 0, SEEK_SET);
 
-        GLchar *shader_string = malloc((sizeof *shader_string) * (length + 1));
-        if (!shader_string)
+        GLchar *shader_string = malloc((sizeof(*shader_string)) * (length + 1));
+        if (shader_string == NULL) {
                 ERROR_N_DIE(errno, "");
+        }
 
         int cursor;
         uint index = 0;
@@ -33,7 +36,8 @@ GLchar *const get_shader(char *shader_file)
         return shader_string;
 }
 
-void compile_shaders(GLuint const *const shader_program)
+void
+compile_shaders(GLuint const *const shader_program)
 {
         GLchar *const vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -48,6 +52,7 @@ void compile_shaders(GLuint const *const shader_program)
         if (!success) {
                 glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
                 fprintf(stderr, "Vertex shader compilation error: %s\n", info_log);
+                free(vertex_shader_source);
                 return;
         }
 
@@ -63,6 +68,7 @@ void compile_shaders(GLuint const *const shader_program)
         if (!success) {
                 glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
                 fprintf(stderr, "Fragment shader compilation error: %s\n", info_log);
+                free(fragment_shader_source);
                 return;
         }
 

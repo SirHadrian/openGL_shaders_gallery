@@ -18,10 +18,8 @@
                 exit(EXIT_FAILURE); \
         } while(0)
 
-#define ALLOW_UNUSED __attribute__((unused))
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-
-typedef enum { False = 0, True = 1 } Bool;
+#define ALLOW_UNUSED    __attribute__((unused))
+#define ARRAY_SIZE(x)   (sizeof(x) / sizeof((x)[0]))
 
 typedef unsigned int        uint;
 typedef unsigned long int   ulint;

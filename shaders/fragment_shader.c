@@ -51,13 +51,7 @@ main()
 
   vec3 color = vec3(0.);
 
-  vec2 pv = uv;
-
-  float le = length(pv);
-
-  // uv+=p/l*(sin(z)+1.)*abs(sin(l*9.-z-z));
-
-  color += clamp(.01 / le, 0., 1.) * 9;
+  color.rg = uv;
 
   FragColor = vec4(color, 1.);
 }

@@ -7,6 +7,6 @@
 #define FRAGMENT_SHADER_PATH    "shaders/fragment_shader.c"
 
 GLchar*         get_shader(char *shader_file);
-void            compile_shaders(GLuint const *const shader_program);
+int             compile_shaders(GLuint const *const new_shader_program);
 
 #endif /* SHADER_H */

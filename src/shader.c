@@ -36,8 +36,8 @@ get_shader(char *shader_file)
         return shader_string;
 }
 
-void
-compile_shaders(GLuint const *const shader_program)
+int
+compile_shaders(GLuint const *const new_shader_program)
 {
         GLchar *const vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -53,7 +53,7 @@ compile_shaders(GLuint const *const shader_program)
                 glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
                 fprintf(stderr, "Vertex shader compilation error: %s\n", info_log);
                 free(vertex_shader_source);
-                return;
+                return 1;
         }
 
         free(vertex_shader_source);
@@ -69,23 +69,25 @@ compile_shaders(GLuint const *const shader_program)
                 glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
                 fprintf(stderr, "Fragment shader compilation error: %s\n", info_log);
                 free(fragment_shader_source);
-                return;
+                return 1;
         }
 
         free(fragment_shader_source);
 
-        glAttachShader(*shader_program, vertex_shader);
-        glAttachShader(*shader_program, fragment_shader);
-        glLinkProgram(*shader_program);
+        glAttachShader(*new_shader_program, vertex_shader);
+        glAttachShader(*new_shader_program, fragment_shader);
+        glLinkProgram(*new_shader_program);
 
-        glGetProgramiv(*shader_program, GL_LINK_STATUS, &success);
+        glGetProgramiv(*new_shader_program, GL_LINK_STATUS, &success);
         if (!success) {
-                glGetProgramInfoLog(*shader_program, 512, NULL, info_log);
+                glGetProgramInfoLog(*new_shader_program, 512, NULL, info_log);
                 fprintf(stderr, "Shader program linking error: %s\n", info_log);
-                return;
+                return 1;
         }
 
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
+
+        return 0;
 }
 

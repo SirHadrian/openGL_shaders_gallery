@@ -6,7 +6,7 @@
 #include "shader.h"
 #include "utils.h"
 
-GLchar *const
+GLchar*
 get_shader(char *shader_file)
 {
         FILE *file = fopen(shader_file, "r");

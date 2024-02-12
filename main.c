@@ -185,17 +185,6 @@ process_input(GLFWwindow *const window, GLuint *const shader_program)
                 *shader_program = glCreateProgram();
                 compile_shaders(shader_program);
         }
-        // Not working for some reason
-        // else if(glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-        //   GLFWmonitor *monitor = glfwGetWindowMonitor(window);
-        //   if(monitor == NULL) {
-        //     const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-        //     glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height,
-        //                          mode->refreshRate);
-        //   } else {
-        //     glfwSetWindowMonitor(window, NULL, 0, 0, WIDTH, HEIGHT, 0);
-        //   }
-        // }
 }
 
 void

@@ -8,7 +8,8 @@
 GLfloat xMousePos = 0.f, yMousePos = 0.f;
 int is_inside_window = 0;
 
-int main(void)
+int
+main(void)
 {
         if (!glfwInit()) {
                 die("Could not initialize GLFW");

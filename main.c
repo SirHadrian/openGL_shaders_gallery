@@ -131,7 +131,6 @@ main(void)
 
         // Render loop
         while (!glfwWindowShouldClose(window)) {
-                // Input
                 process_input(window, &shader_program);
 
                 // Render background color
@@ -159,7 +158,7 @@ main(void)
                 glfwPollEvents();
         }
 
-        // Dealocate resources
+        // Deallocate resources
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);

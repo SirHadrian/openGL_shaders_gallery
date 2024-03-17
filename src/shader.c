@@ -5,6 +5,7 @@
 
 #include "shader.h"
 #include "utils.h"
+#include "alloc.h"
 
 GLchar*
 get_shader(char *shader_file)
@@ -18,10 +19,7 @@ get_shader(char *shader_file)
         ulint length = (ulint)ftell(file);
         fseek(file, 0, SEEK_SET);
 
-        GLchar *shader_string = malloc((sizeof(*shader_string)) * (length + 1));
-        if (shader_string == NULL) {
-                ERROR_N_DIE(errno, "");
-        }
+        GLchar *shader_string = MALLOC(length + 1, *shader_string);
 
         int cursor;
         uint index = 0;

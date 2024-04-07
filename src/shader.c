@@ -20,14 +20,12 @@ get_shader(char *shader_file)
         fseek(file, 0, SEEK_SET);
 
         GLchar *shader_string = MALLOC(length + 1, *shader_string);
-
-        int cursor;
-        uint index = 0;
-
-        while ((cursor = fgetc(file)) != EOF) {
-                shader_string[index] = (char)cursor;
-                index++;
+        if (shader_string == NULL) {
+                ERROR_N_DIE(errno, "Failed malloc");
         }
+
+        fread(shader_string, sizeof(*shader_string), length, file);
+
         shader_string[length] = '\0';
 
         fclose(file);

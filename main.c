@@ -22,7 +22,7 @@ main(void)
         void *start_fullscreen = NULL;
         // void *start_fullscreen = glfwGetPrimaryMonitor();
         GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
-        if (!window) {
+        if (window == NULL) {
                 glfwTerminate();
                 die("Failed to create GLFW window");
         }

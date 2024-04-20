@@ -8,9 +8,9 @@
 #include "alloc.h"
 
 GLchar*
-get_shader(char *shader_file)
+get_shader(char* shader_file)
 {
-        FILE *file = fopen(shader_file, "r");
+        FILE* file = fopen(shader_file, "r");
         if (file == NULL) {
                 ERROR_N_DIE(errno, shader_file);
         }
@@ -19,7 +19,7 @@ get_shader(char *shader_file)
         ulint length = (ulint)ftell(file);
         fseek(file, 0, SEEK_SET);
 
-        GLchar *shader_string = MALLOC(length + 1, *shader_string);
+        GLchar* shader_string = MALLOC(length + 1, *shader_string);
         if (shader_string == NULL) {
                 ERROR_N_DIE(errno, "Failed malloc");
         }
@@ -33,9 +33,9 @@ get_shader(char *shader_file)
 }
 
 int
-compile_shaders(GLuint const *const new_shader_program)
+compile_shaders(GLuint const* const new_shader_program)
 {
-        GLchar *const vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
+        GLchar* const vertex_shader_source = get_shader(VERTEX_SHADER_PATH);
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
         glShaderSource(vertex_shader, 1, (GLchar const **)&vertex_shader_source, NULL);
@@ -54,7 +54,7 @@ compile_shaders(GLuint const *const new_shader_program)
 
         free(vertex_shader_source);
 
-        GLchar *const fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
+        GLchar* const fragment_shader_source = get_shader(FRAGMENT_SHADER_PATH);
         GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
         glShaderSource(fragment_shader, 1, (GLchar const **)&fragment_shader_source, NULL);

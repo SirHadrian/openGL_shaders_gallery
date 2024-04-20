@@ -24,6 +24,6 @@ enum tag {
         do {} while(0)
 #endif
 
-extern void LOG(char const *tag, char const *message);
+extern void LOG(char const* tag, char const* message);
 
 #endif /* LOGGER_H */

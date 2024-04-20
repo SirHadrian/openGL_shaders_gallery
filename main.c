@@ -19,9 +19,9 @@ main(void)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MINOR_VERS);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        void *start_fullscreen = NULL;
+        void* start_fullscreen = NULL;
         // void *start_fullscreen = glfwGetPrimaryMonitor();
-        GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
+        GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, start_fullscreen, NULL);
         if (window == NULL) {
                 glfwTerminate();
                 die("Failed to create GLFW window");
@@ -76,9 +76,9 @@ main(void)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(6 * sizeof(GLfloat)));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -97,7 +97,7 @@ main(void)
         GLint imgWidth, imgHeigth, numColCh;
         // Flip image
         // stbi_set_flip_vertically_on_load(True);
-        uchar *bytes = stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
+        uchar* bytes = stbi_load(TEXTURE_PATH, &imgWidth, &imgHeigth, &numColCh, 0);
         GLuint texture;
 
         glGenTextures(1, &texture);
@@ -176,7 +176,7 @@ main(void)
 }
 
 void
-process_input(GLFWwindow *const window, GLuint *const shader_program)
+process_input(GLFWwindow* const window, GLuint* const shader_program)
 {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) || glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -201,14 +201,14 @@ process_input(GLFWwindow *const window, GLuint *const shader_program)
 }
 
 void
-die(char const *const error)
+die(char const* const error)
 {
         fprintf(stderr, "ERROR: %s\n", error);
         exit(EXIT_FAILURE);
 }
 
 static void
-cursor_position_callback(ALLOW_UNUSED GLFWwindow *window, double xPos, double yPos)
+cursor_position_callback(ALLOW_UNUSED GLFWwindow* window, double xPos, double yPos)
 {
         if (is_inside_window) {
                 xMousePos = (GLfloat)xPos;
@@ -217,13 +217,13 @@ cursor_position_callback(ALLOW_UNUSED GLFWwindow *window, double xPos, double yP
 }
 
 void
-cursor_enter_callback(ALLOW_UNUSED GLFWwindow *window, int inside)
+cursor_enter_callback(ALLOW_UNUSED GLFWwindow* window, int inside)
 {
         is_inside_window = inside ? 1 : 0;
 }
 
 void
-framebuffer_size_callback(ALLOW_UNUSED GLFWwindow *window, int width, int height)
+framebuffer_size_callback(ALLOW_UNUSED GLFWwindow* window, int width, int height)
 {
         glViewport(0, 0, width, height);
 }

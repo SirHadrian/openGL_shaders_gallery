@@ -1,5 +1,5 @@
 TARGET=window.out
-SRCDIRS=. ./src
+SRCDIRS=./src
 
 CC=gcc
 LD=gcc
